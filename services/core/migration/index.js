@@ -10,12 +10,12 @@ const cron = async () => {
   if (setting.removeExistIndexForMigration) {
     for (const key of urls_keys) {
       const index = urls[key].index || key,
-        infoName = urls[key].infoName;
+        serviceName = urls[key].serviceName;
 
       if (
         (setting.migration.allowEntities[0] === 'all' ||
-          setting.migration.allowEntities.includes(infoName)) &&
-        !setting.migration.disallowEntities.includes(infoName)
+          setting.migration.allowEntities.includes(serviceName)) &&
+        !setting.migration.disallowEntities.includes(serviceName)
       ) {
         try {
           await strapi.elastic.indices.delete({ index: index });
@@ -29,15 +29,15 @@ const cron = async () => {
   // import to elasticsearch
   for (const key of urls_keys) {
     const index = urls[key].index,
-      infoName = urls[key].infoName,
+      serviceName = urls[key].serviceName,
       withRelated = urls[key].withRelated;
     if (
       (setting.migration.allowEntities[0] === 'all' ||
-        setting.migration.allowEntities.includes(infoName)) &&
-      !setting.migration.disallowEntities.includes(infoName)
+        setting.migration.allowEntities.includes(serviceName)) &&
+      !setting.migration.disallowEntities.includes(serviceName)
     ) {
       strapi.log.info('Start importing!');
-      await importToElasticsearch({ index, infoName, withRelated });
+      await importToElasticsearch({ index, serviceName, withRelated });
     }
   }
 

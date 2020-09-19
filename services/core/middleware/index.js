@@ -43,7 +43,7 @@ const elasticsearchManager = async (ctx) => {
     } else if (setting.fillByResponse === false) {
       if (withRelated) {
         const raw_data = await strapi
-          .query(index_.infoName)
+          .query(index_.serviceName)
           .model.query((qb) => {
             qb.limit(1);
             qb.where('id', '=', id);
@@ -53,7 +53,7 @@ const elasticsearchManager = async (ctx) => {
           });
         data = await raw_data.toJSON();
       } else if (!withRelated) {
-        data = await strapi.services[index_.infoName].findOne({ id: id });
+        data = await strapi.services[index_.serviceName].findOne({ id: id });
       }
     }
     return await createOrUpdate(index, id, data);
