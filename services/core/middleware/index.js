@@ -45,7 +45,6 @@ const elasticsearchManager = async (ctx) => {
         const raw_data = await strapi
           .query(index_.service)
           .model.query((qb) => {
-            qb.limit(1);
             qb.where('id', '=', id);
           })
           .fetch({
