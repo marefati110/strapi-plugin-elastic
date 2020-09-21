@@ -1,9 +1,9 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="https://i.ibb.co/zG6Nj3g/Untitled-1.jpg" alt="Project logo"></a>
+ <img src="https://i.ibb.co/zG6Nj3g/Untitled-1.jpg" alt="Project logo"></a>
 </p>
 
-<h۱ align="center">Under development</h۱>
+<h1 align="center" >Under development</h1>
 
 <h3 align="center">strapi elasticsearch</h3>
 
