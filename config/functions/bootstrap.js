@@ -4,20 +4,22 @@ const { Client } = require('@elastic/elasticsearch');
 const { connection } = strapi.config.elasticsearch;
 const {
   createOrUpdate,
-} = require('../../services/core/functions/CreateOrUpdate');
-const { findOne } = require('../../services/core/functions/findOne');
-const { destroy } = require('../../services/core/functions/Delete');
+  destroy,
+  findOne,
+  migrateModel,
+} = require('../../services');
 
 // connect to server
 const client = new Client(connection);
 
 module.exports = async () => {
+  // combine elasticsearch package with strapi object
   strapi.elastic = client;
+  // combine custom functions with strapi object
   strapi.elastic.findOne = findOne;
   strapi.elastic.destroy = destroy;
   strapi.elastic.createOrUpdate = createOrUpdate;
-  
-  const result = await findOne('strapi_elasticsearch', 1);
-  if (!result)
-    await createOrUpdate('strapi_elasticsearch', 1, { sql_lat_value: 0 });
+  strapi.elastic.migrateModel = migrateModel;
+  // create  `strapi_elasticsearch` index
+  createOrUpdate('strapi_elasticsearch', 1, { value: 1 });
 };
