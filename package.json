@@ -1,27 +1,29 @@
 {
   "name": "strapi-plugin-elasticsearch",
-  "version": "0.0.0",
+  "version": "1.1.0",
   "description": "this package help you easily send your data to elasticsearch.",
   "strapi": {
     "name": "elasticsearch",
     "icon": "plug",
     "description": "Description of elasticsearch plugin."
   },
-  "dependencies": {},
+  "dependencies": {
+    "@elastic/elasticsearch": "^7.8.0"
+  },
   "author": {
-    "name": "A Strapi developer",
+    "name": "Ali Marefati",
     "email": "marefati110@gmail.com",
     "url": "https://github.com/marefati110"
   },
   "maintainers": [
     {
-      "name": "A Strapi developer",
+      "name": "Ali Marefati",
       "email": "marefati110@gmail.com",
       "url": "https://github.com/marefati110"
     }
   ],
   "engines": {
-    "node": ">=10.0.0",
+    "node": ">=12.0.0",
     "npm": ">=6.0.0"
   },
   "license": "MIT"
