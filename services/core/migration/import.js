@@ -2,11 +2,11 @@
 
 const { setting } = strapi.config.elasticsearch;
 
-const importToElasticsearch = async ({ index, serviceName, withRelated }) => {
+const importToElasticsearch = async ({ index, service, withRelated }) => {
   let start = 0;
 
   // define variable for progress bar
-  let index_length = await strapi.services[serviceName].count();
+  let index_length = await strapi.services[service].count();
   index_length = parseInt(index_length / setting.importLimit);
 
   let result = ['Initial value'];
@@ -16,7 +16,7 @@ const importToElasticsearch = async ({ index, serviceName, withRelated }) => {
 
     if (withRelated) {
       result = await strapi
-        .query(serviceName)
+        .query(service)
         .model.query((qb) => {
           qb.limit(setting.importLimit);
           qb.offset(setting.importLimit * start);
@@ -26,7 +26,7 @@ const importToElasticsearch = async ({ index, serviceName, withRelated }) => {
         });
       result = await result.toJSON();
     } else {
-      result = await strapi.services[serviceName].find({
+      result = await strapi.services[service].find({
         _start: setting.importLimit * start,
         _limit: setting.importLimit,
       });
