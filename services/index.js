@@ -7,6 +7,8 @@ const {
   migrateModel,
 } = require('./core');
 
+const log = require('./log');
+
 module.exports = {
   createOrUpdate,
   cron,
@@ -14,4 +16,5 @@ module.exports = {
   elasticsearchManager,
   findOne,
   migrateModel,
+  log,
 };

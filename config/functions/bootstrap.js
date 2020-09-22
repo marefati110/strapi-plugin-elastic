@@ -7,6 +7,7 @@ const {
   destroy,
   findOne,
   migrateModel,
+  log,
 } = require('../../services');
 
 // connect to server
@@ -20,6 +21,8 @@ module.exports = async () => {
   strapi.elastic.destroy = destroy;
   strapi.elastic.createOrUpdate = createOrUpdate;
   strapi.elastic.migrateModel = migrateModel;
+  // strapi.elasticsearch logs
+  strapi.elastic.log = log;
   // create  `strapi_elasticsearch` index
   createOrUpdate('strapi_elasticsearch', 1, { value: 1 });
 };
