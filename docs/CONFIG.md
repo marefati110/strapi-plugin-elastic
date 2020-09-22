@@ -18,13 +18,7 @@ module.exports = ({ env }) => ({
       disallowEntities: [],
     },
   },
-  urls: {
-    model_A: { service: 'service_A', index: 'index_A', withRelated: ['T1', 'T2'] },
-    model_B: { service: 'service_B', index: 'index_B', withRelated: ['T3', 'T4'] },
-  },
-  adminUrls: {
-    model_A: { service: 'service_A', index: 'index_A', withRelated: ['T1', 'T2'] },
-    model_B: { service: 'service_B', index: 'index_B', withRelated: ['T3', 'T4'] },
-  },
-});
+  urls: {},
+  adminUrls: {}
+  );
 ```
