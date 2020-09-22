@@ -60,12 +60,9 @@ Install plugin
   - Create new config file
     - `touch elasticsearch.js`
    
-  - Copy [sample]("./docs/CONFIG.md") config file to elasticsearch.js
+  - Copy [sample](docs/CONFIG.md) config file to elasticsearch.js
 
-  - Go to `project/config/middleware.js` and add `"elastic"` to end of `before` array
-    - final should be like this
-
-
+  - Go to `project/config/middleware.js` and add `"elastic"` to end of `load.before`
 
 ## 🎈 Usage <a name="usage"></a>
 
