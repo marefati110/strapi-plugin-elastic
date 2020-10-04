@@ -6,6 +6,7 @@ const {
   createOrUpdate,
   destroy,
   findOne,
+  find,
   migrateModel,
   log,
 } = require('../../services');
@@ -18,6 +19,7 @@ module.exports = async () => {
   strapi.elastic = client;
   // combine custom functions with strapi object
   strapi.elastic.findOne = findOne;
+  strapi.elastic.find = find;
   strapi.elastic.destroy = destroy;
   strapi.elastic.createOrUpdate = createOrUpdate;
   strapi.elastic.migrateModel = migrateModel;

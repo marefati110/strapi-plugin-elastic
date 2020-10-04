@@ -4,9 +4,20 @@ const { cron } = require('../services/core/migration/');
 
 module.exports = {
   index: async (ctx) => {
-    await cron();
+    cron();
     ctx.send({
-      message: 'Done.',
+      message: 'on progress',
     });
+  },
+  customMigrate: async (ctx) => {
+    /**
+     * @param(index)
+     * @param(service)
+     * @param(withRelated) // optional
+     * @param(importLimit) // optional
+     */
+    const params = ctx.request.body;
+    await strapi.elastic.migrateModel(params);
+    await ctx.send('ok');
   },
 };

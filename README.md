@@ -40,9 +40,7 @@ Install plugin
 
   - Install dependencies
 
-    - `yarn add "@elastic/elasticsearch`
-    - `yarn ads moment`
-    - `yarn add os-utils`
+    - `yarn install` 
 
   - Go to the project path
     - `cd project/plugins`

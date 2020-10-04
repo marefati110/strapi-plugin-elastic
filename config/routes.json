@@ -7,6 +7,14 @@
       "config": {
         "policies": []
       }
+    },
+    {
+      "method": "POST",
+      "path": "/migrate",
+      "handler": "elasticsearch.customMigrate",
+      "config": {
+        "policies": []
+      }
     }
   ]
 }
