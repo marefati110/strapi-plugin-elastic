@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.8.0",
-    "os-utils": "^0.0.14",
     "moment": "^2.27.0"
   },
   "author": {

@@ -4,6 +4,8 @@ const os = require('os');
 const moment = require('moment');
 
 const sendToElasticsearch = (data) => {
+  if (data && data.setting && data.setting.saveToElastic === false) return;
+
   data.time = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
   data.metaData = {
     pid: process.pid,
@@ -19,29 +21,45 @@ const sendToElasticsearch = (data) => {
   });
 };
 
+const log = ({ show, level, msg }) => {
+  show = show === false ? false : true;
+
+  if (show && level) {
+    strapi.log[level](msg);
+  } else if (show && !level) {
+    console.log(msg);
+  }
+};
+
 module.exports = {
   custom: (msg, data) => {
+    const show = data && data.setting && data.setting.show;
+    log({ msg, level: false, show });
     sendToElasticsearch({ msg, ...data, level: 'custom' });
-    return console.log(msg);
   },
   warn: (msg, data) => {
+    const show = data && data.setting && data.setting.show;
+    log({ msg, level: 'warn', show });
     sendToElasticsearch({ msg, ...data, level: 'warn' });
-    return strapi.log.warn(msg);
   },
   fatal: (msg, data) => {
+    const show = data && data.setting && data.setting.show;
+    log({ msg, level: 'fatal', show });
     sendToElasticsearch({ msg, ...data, level: 'fatal' });
-    return strapi.log.fatal(msg);
   },
   info: (msg, data) => {
+    const show = data && data.setting && data.setting.show;
+    log({ msg, level: 'info', show });
     sendToElasticsearch({ msg, ...data, level: 'info' });
-    return strapi.log.info(msg);
   },
   debug: (msg, data) => {
+    const show = data && data.setting && data.setting.show;
+    log({ msg, level: 'debug', show });
     sendToElasticsearch({ msg, ...data, level: 'debug' });
-    return strapi.log.debug(msg);
   },
   error: (msg, data) => {
-    sendToElasticsearch({ msg, data, level: 'error' });
-    return strapi.log.error(msg);
+    const show = data && data.setting && data.setting.show;
+    log({ msg, level: 'error', show });
+    sendToElasticsearch({ msg, ...data, level: 'error' });
   },
 };
