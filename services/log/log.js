@@ -1,14 +1,16 @@
 'use strict';
 
-// const os = require('os-utils');
+const os = require('os');
 const moment = require('moment');
 
 const sendToElasticsearch = (data) => {
   data.time = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
   data.metaData = {
     pid: process.pid,
-    // cpu_usage: os.cpuUsage(),
-    // free_mem: os.freemem(),
+    free_mem: os.freemem(),
+    total_mem: os.totalmem(),
+    hostname: os.hostname(),
+    loadavg: os.loadavg(),
   };
 
   return strapi.elastic.index({
