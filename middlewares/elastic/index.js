@@ -1,6 +1,6 @@
 'use strict';
 
-const { elasticsearchManager } = require('../../services/core/middlewares');
+const { elasticsearchManager } = require('../../services/core/middleware');
 
 module.exports = (strapi) => {
   return {

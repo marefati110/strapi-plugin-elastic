@@ -29,6 +29,7 @@ module.exports = {
       }
     }
     // import to elasticsearch
+    strapi.log.info('Start importing!');
     for (const key of urls_keys) {
       const index = urls[key].index,
         service = urls[key].service,
@@ -38,7 +39,6 @@ module.exports = {
           setting.migration.allowEntities.includes(service)) &&
         !setting.migration.disallowEntities.includes(service)
       ) {
-        strapi.log.info('Start importing!');
         await importToElasticsearch({ index, service, withRelated });
       }
     }

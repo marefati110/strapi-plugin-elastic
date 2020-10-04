@@ -14,9 +14,10 @@ const importToElasticsearch = async ({
   let index_length = await strapi.services[service].count();
   index_length = parseInt(index_length / (importLimit || setting.importLimit));
 
-  let result = ['Initial value'];
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    let result = [];
 
-  while (result.length !== 0) {
     const start_sql = Date.now();
 
     if (withRelated) {
@@ -37,6 +38,7 @@ const importToElasticsearch = async ({
       });
     }
 
+    if (result.length === 0) return;
     //
     const end_sql = Date.now();
     //
@@ -45,7 +47,6 @@ const importToElasticsearch = async ({
       { index: { _index: index, _id: doc.id } },
       doc,
     ]);
-
     const start_elastic = Date.now();
     //
     try {
