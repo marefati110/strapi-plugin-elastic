@@ -1,13 +1,12 @@
 'use strict';
 
-const { setting } = strapi.config.elasticsearch;
-
 const importToElasticsearch = async ({
   index,
   service,
   withRelated,
   importLimit,
 }) => {
+  const { setting } = strapi.config.elasticsearch;
   let start = 0;
 
   // define variable for progress bar

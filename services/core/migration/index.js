@@ -1,11 +1,11 @@
 'user strict';
 
-const { urls, setting } = strapi.config.elasticsearch;
 const { importToElasticsearch } = require('./import');
 
 module.exports = {
   migrateModel: importToElasticsearch,
   cron: async () => {
+    const { urls, setting } = strapi.config.elasticsearch;
     const urls_keys = Object.keys(urls);
 
     // delete indices
