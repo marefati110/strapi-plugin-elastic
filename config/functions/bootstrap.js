@@ -1,6 +1,9 @@
 'use strict';
 
 const { Client } = require('@elastic/elasticsearch');
+const {
+  generateConfig: { generateConfig },
+} = require('../../services');
 const { connection } = strapi.config.elasticsearch;
 const {
   createOrUpdate,
@@ -17,6 +20,7 @@ const client = new Client(connection);
 module.exports = async () => {
   // combine elasticsearch package with strapi object
   strapi.elastic = client;
+  await generateConfig();
   // combine custom functions with strapi object
   strapi.elastic.findOne = findOne;
   strapi.elastic.find = find;
