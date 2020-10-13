@@ -12,7 +12,8 @@ module.exports = {
       for (const url of model.urls) {
         // check url matching by regexp
         // need refactor
-        const status = url.match(reqUrl);
+        const re = new RegExp(url);
+        const status = re.test(reqUrl);
 
         if (status) return model;
       }

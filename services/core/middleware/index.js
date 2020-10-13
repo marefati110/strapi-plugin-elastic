@@ -1,7 +1,6 @@
 'use strict';
-const { findModel } = require('./helpers');
 
-const urlIdPattern = /\d*$/;
+const { findModel } = require('./helpers');
 
 module.exports = {
   elasticsearchManager: async (ctx) => {
@@ -25,12 +24,13 @@ module.exports = {
       models: models,
       reqUrl: url,
     });
+    if (!targetModel) return;
 
     // save response data to body variable - use when fillByResponse set to true
     const body = ctx.response.body;
 
     // find id of record
-    const pk = targetModel.pk;
+    const pk = targetModel.pk || 'id';
     const id = body[pk] || ctx.params[pk] || ctx.query[pk];
 
     /*
@@ -73,13 +73,14 @@ module.exports = {
       /*
        * insert data to elasticsearch
        */
-      return await strapi.elastic.createOrUpdate(targetModel.index, id, data);
+      return strapi.elastic.createOrUpdate(targetModel.index, id, data);
     }
     /*
      * delete data from elasticsearch
      */
-    if (deleteMethod)
-      return await strapi.elastic.destroy(targetModel.index, id);
+    if (deleteMethod) {
+      return strapi.elastic.destroy(targetModel.index, id);
+    }
   },
 };
 
@@ -88,7 +89,6 @@ function checkRequest(ctx) {
   let status = false;
   if (
     setting.validMethod.includes(ctx.request.method) &&
-    urlIdPattern.test(ctx.request.url) &&
     setting.validStatus.includes(ctx.response.status)
   )
     status = true;
