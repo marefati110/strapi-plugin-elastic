@@ -16,20 +16,28 @@ module.exports = {
      */
     const url = ctx.request.url;
 
-    // import config from config file
+    /*
+     * import models and setting from config file
+     */
     const { setting, models } = strapi.config.elasticsearch;
 
-    // find target model of request
+    /*
+     * find target model of request
+     */
     const targetModel = await findModel({
       models: models,
       reqUrl: url,
     });
     if (!targetModel) return;
 
-    // save response data to body variable - use when fillByResponse set to true
+    /*
+     * save response data to body variable - use when fillByResponse set to true
+     */   
     const body = ctx.response.body;
 
-    // find id of record
+    /*
+     * find id of record
+     */ 
     const pk = targetModel.pk || 'id';
     const id = body[pk] || ctx.params[pk] || ctx.query[pk];
 
