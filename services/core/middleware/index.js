@@ -54,21 +54,16 @@ module.exports = {
          */
         data = body;
         //
-      } else if (!setting.fillByResponse && !targetModel.plugin) {
+      } else if (!setting.fillByResponse) {
         /*
          * fetch data by id using conditions and relation
          * defined in elasticsearch.js config file for model.
          */
         data = await strapi
-          .query(targetModel.model)
-          .findOne(
-            { id: id, ...targetModel.conditions },
-            targetModel.relations
-          );
-      } else if (!setting.fillByResponse && targetModel.plugin) {
-        /**
-         * under construction
-         */
+          .query(targetModel.model, targetModel.plugin)
+          .findOne({ id: id, ...targetModel.conditions }, [
+            ...targetModel.relations,
+          ]);
       }
       /*
        * insert data to elasticsearch
