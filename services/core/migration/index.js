@@ -4,16 +4,24 @@ const { migrateModel } = require('./migrate');
 
 module.exports = {
   migrateModel,
-  migrateAllModels: async () => {
+  migrateModels: async () => {
     const { setting, models } = strapi.config.elasticsearch;
 
     /*
      * remove elasticsearch index before migration
-     * function will execute for all models
      */
     if (setting.removeExistIndexForMigration) {
+      /*
+       * function will execute for all models
+       */
       await models.map(async (model) => {
-        await strapi.elastic.indices.delete({ index: model.index });
+        /*
+         * check model are enable
+         */
+        if (model.enable === true) {
+          //
+          await strapi.elastic.indices.delete({ index: model.index });
+        }
       });
     }
 
@@ -23,7 +31,13 @@ module.exports = {
      * call migrateModel function for each model
      */
     await models.map(async (model) => {
-      await migrateModel(model);
+      /*
+       * check model are enable
+       */
+      if (model.enable === true) {
+        //
+        await migrateModel(model);
+      }
     });
 
     strapi.elastic.log.info('All models imported to elasticsearch.');

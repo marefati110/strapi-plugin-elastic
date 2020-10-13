@@ -1,6 +1,6 @@
 const { createOrUpdate, findOne, destroy, find } = require('./functions');
 const { elasticsearchManager } = require('./middleware');
-const { cron, migrateModel } = require('./migration');
+const { migrateModel, migrateModels } = require('./migration');
 
 module.exports = {
   createOrUpdate,
@@ -8,6 +8,6 @@ module.exports = {
   find,
   destroy,
   elasticsearchManager,
-  cron,
   migrateModel,
+  migrateModels,
 };

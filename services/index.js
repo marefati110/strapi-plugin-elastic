@@ -1,18 +1,18 @@
 const {
   createOrUpdate,
-  cron,
+  migrateModels,
   destroy,
   elasticsearchManager,
   findOne,
   find,
   migrateModel,
 } = require('./core');
-const generateConfig = require('./generate-config');
+const generateConfig = require('./generateConfig');
 const log = require('./log');
 
 module.exports = {
   createOrUpdate,
-  cron,
+  migrateModels,
   find,
   destroy,
   elasticsearchManager,

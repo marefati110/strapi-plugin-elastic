@@ -16,9 +16,9 @@ module.exports = {
     let start = 0;
 
     // define variable for progress bar
-    let index_length = await strapi.services[model].count();
-    index_length = parseInt(
-      index_length / (importLimit || setting.importLimit)
+    let modelSize = await strapi.services[model].count();
+    modelSize = parseInt(
+      modelSize / (importLimit || setting.importLimit)
     );
 
     // eslint-disable-next-line no-constant-condition
@@ -57,7 +57,7 @@ module.exports = {
       // progress bar
       strapi.log.info(
         `(${start}/${
-          index_length + 1
+          modelSize + 1
         }) imported to ${index} | sql query takes ${parseInt(
           (end_sql - start_sql) / 1000
         )}s and elasticsearch takes ${parseInt(
