@@ -7,7 +7,7 @@ const {
   find,
   migrateModel,
 } = require('./core');
-
+const generateConfig = require('./generate-config');
 const log = require('./log');
 
 module.exports = {
@@ -19,4 +19,5 @@ module.exports = {
   findOne,
   migrateModel,
   log,
+  generateConfig,
 };
