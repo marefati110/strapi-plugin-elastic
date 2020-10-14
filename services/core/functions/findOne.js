@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
   findOne: async (index, id) => {
     try {
@@ -9,7 +7,7 @@ module.exports = {
       });
       return elasticsearchResponse;
     } catch (e) {
-      return;
+
     }
   },
 };

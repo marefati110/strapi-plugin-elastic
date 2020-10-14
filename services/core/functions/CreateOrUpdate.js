@@ -1,12 +1,10 @@
-'use strict';
-
 const createOrUpdate = async (index, id, data) => {
   let elasticsearchResponse;
 
   try {
     elasticsearchResponse = await strapi.elastic.update({
-      id: id,
-      index: index,
+      id,
+      index,
       body: {
         doc: data,
         doc_as_upsert: true,
@@ -18,9 +16,8 @@ const createOrUpdate = async (index, id, data) => {
 
   if (elasticsearchResponse) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 };
 
 module.exports = { createOrUpdate };

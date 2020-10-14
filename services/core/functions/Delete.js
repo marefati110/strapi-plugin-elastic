@@ -1,11 +1,9 @@
-'use strict';
-
 const destroy = async (index, id) => {
   let elasticsearchResponse;
   try {
     elasticsearchResponse = await strapi.elastic.delete({
-      id: id,
-      index: index,
+      id,
+      index,
     });
   } catch (e) {
     console.error(e.message);
@@ -13,9 +11,8 @@ const destroy = async (index, id) => {
 
   if (elasticsearchResponse) {
     return true;
-  } else {
-    return false;
   }
+  return false;
 };
 
 module.exports = { destroy };

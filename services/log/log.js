@@ -1,5 +1,3 @@
-'use strict';
-
 const os = require('os');
 const moment = require('moment');
 
@@ -22,7 +20,7 @@ const sendToElasticsearch = (data) => {
 };
 
 const log = ({ show, level, msg }) => {
-  show = show === false ? false : true;
+  show = show !== false;
 
   if (show && level) {
     strapi.log[level](msg);

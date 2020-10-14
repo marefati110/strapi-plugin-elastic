@@ -1,45 +1,48 @@
 'user strict';
 
-const { migrateModel } = require('./migrate');
+const { urls, setting } = strapi.config.elasticsearch;
+const { importToElasticsearch } = require('./import');
 
 module.exports = {
-  migrateModel,
-  migrateModels: async () => {
-    const { setting, models } = strapi.config.elasticsearch;
+  migrateModel: importToElasticsearch,
+  cron: async () => {
+    const urls_keys = Object.keys(urls);
 
-    /*
-     * remove elasticsearch index before migration
-     */
+    // delete indices
     if (setting.removeExistIndexForMigration) {
-      /*
-       * function will execute for all models
-       */
-      await models.map(async (model) => {
-        /*
-         * check model are enable
-         */
-        if (model.enable === true) {
-          //
-          await strapi.elastic.indices.delete({ index: model.index });
+      for (const key of urls_keys) {
+        const index = urls[key].index || key;
+        const { service } = urls[key];
+
+        if (
+          (setting.migration.allowEntities[0] === 'all'
+            || setting.migration.allowEntities.includes(service))
+          && !setting.migration.disallowEntities.includes(service)
+        ) {
+          try {
+            await strapi.elastic.indices.delete({ index });
+            strapi.log.warn(`Index ${index} deleted.`);
+          } catch (e) {
+            strapi.log.error(e.meta.body.error.reason);
+          }
         }
-      });
+      }
+    }
+    // import to elasticsearch
+    strapi.log.info('Start importing!');
+    for (const key of urls_keys) {
+      const { index } = urls[key];
+      const { service } = urls[key];
+      const { withRelated } = urls[key];
+      if (
+        (setting.migration.allowEntities[0] === 'all'
+          || setting.migration.allowEntities.includes(service))
+        && !setting.migration.disallowEntities.includes(service)
+      ) {
+        await importToElasticsearch({ index, service, withRelated });
+      }
     }
 
-    strapi.elastic.log.info('Import all model to elasticsearch.');
-
-    /*
-     * call migrateModel function for each model
-     */
-    await models.map(async (model) => {
-      /*
-       * check model are enable
-       */
-      if (model.enable === true) {
-        //
-        await migrateModel(model);
-      }
-    });
-
-    strapi.elastic.log.info('All models imported to elasticsearch.');
+    strapi.log.info('Done');
   },
 };

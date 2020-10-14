@@ -1,12 +1,10 @@
-'use strict';
-
-const { migrateModels } = require('../services/core/migration/');
+const { cron } = require('../services/core/migration');
 
 module.exports = {
   index: async (ctx) => {
-    migrateModels();
+    cron();
     ctx.send({
-      message: 'On progress',
+      message: 'on progress',
     });
   },
   customMigrate: async (ctx) => {
