@@ -9,6 +9,22 @@
       }
     },
     {
+      "method": "GET",
+      "path": "/models",
+      "handler": "elasticsearch.fetchModels",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/model",
+      "handler": "elasticsearch.fetchModel",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "POST",
       "path": "/migrate",
       "handler": "elasticsearch.customMigrate",
