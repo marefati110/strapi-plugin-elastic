@@ -1,5 +1,16 @@
 const { findModel } = require('./helpers');
 
+function checkRequest(ctx) {
+  const { setting } = strapi.config.elasticsearch;
+  let status = false;
+  if (
+    setting.validMethod.includes(ctx.request.method)
+    && setting.validStatus.includes(ctx.response.status)
+  ) status = true;
+
+  return status;
+}
+
 module.exports = {
   elasticsearchManager: async (ctx) => {
     /*
@@ -34,7 +45,8 @@ module.exports = {
     /*
      * method validation
      */
-    const postOrPutMethod = ctx.request.method === 'POST' || ctx.request.method === 'PUT';
+    const postOrPutMethod =
+      ctx.request.method === 'POST' || ctx.request.method === 'PUT';
 
     const deleteMethod = ctx.request.method === 'DELETE';
     /*
@@ -65,24 +77,13 @@ module.exports = {
       /*
        * insert data to elasticsearch
        */
-      return strapi.elastic.createOrUpdate(targetModel.index, id, data);
+      await strapi.elastic.createOrUpdate(targetModel.index, id, data);
     }
     /*
      * delete data from elasticsearch
      */
     if (deleteMethod) {
-      return strapi.elastic.destroy(targetModel.index, id);
+      await strapi.elastic.destroy(targetModel.index, id);
     }
   },
 };
-
-function checkRequest(ctx) {
-  const { setting } = strapi.config.elasticsearch;
-  let status = false;
-  if (
-    setting.validMethod.includes(ctx.request.method)
-    && setting.validStatus.includes(ctx.response.status)
-  ) status = true;
-
-  return status;
-}
