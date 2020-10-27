@@ -4,9 +4,10 @@ function checkRequest(ctx) {
   const { setting } = strapi.config.elasticsearch;
   let status = false;
   if (
-    setting.validMethod.includes(ctx.request.method)
-    && setting.validStatus.includes(ctx.response.status)
-  ) status = true;
+    setting.validMethod.includes(ctx.request.method) &&
+    setting.validStatus.includes(ctx.response.status)
+  )
+    status = true;
 
   return status;
 }
@@ -68,6 +69,7 @@ module.exports = {
          * fetch data by id using conditions and relation
          * defined in elasticsearch.js config file for model.
          */
+
         data = await strapi
           .query(targetModel.model, targetModel.plugin)
           .findOne({ id, ...targetModel.conditions }, [

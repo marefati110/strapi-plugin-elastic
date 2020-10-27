@@ -26,7 +26,7 @@ module.exports = {
         elasticsearchConfig,
         (err) => {
           if (err) throw err;
-        },
+        }
       );
     }
   },
@@ -45,14 +45,13 @@ const modelConfigTemplate = (model) => ({
   urls: [],
 });
 
+// its better to generate beauty object
+
 const elasticsearchConfigTemplate = (modelsConfig) => `
 module.exports = ({ env }) => ({
   connection: {
-    node: env('ELASTICSEARCH_HOST'),
-    auth: {
-      username: env('ELASTICSEARCH_USERNAME'),
-      password: env('ELASTICSEARCH_PASSWORD'),
-    },
+    // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/auth-reference.html
+    node: env('ELASTICSEARCH_HOST', 'http://127.0.0.1:9200'),
   },
   setting: {
     version: 1,

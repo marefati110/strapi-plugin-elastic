@@ -1,6 +1,7 @@
 const { Client } = require('@elastic/elasticsearch');
 const {
   generateConfig: { generateConfig },
+  helper: { checkEnableModels },
 } = require('../../services');
 const {
   createOrUpdate,
@@ -32,8 +33,11 @@ module.exports = async () => {
     // create  `strapi_elasticsearch` index
     createOrUpdate('strapi_elasticsearch', 1, { value: 1 });
 
+    // create index for enable models
+    await checkEnableModels();
+
     // bootstrap message
-    strapi.elastic.log.info('elastic is up :D', {
+    strapi.elastic.log.info('The elastic plugin is running ...', {
       setting: { saveToElastic: false },
     });
   }
