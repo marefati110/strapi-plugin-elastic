@@ -27,47 +27,71 @@
 - [Contributing Guide](#CONTRIBUTING)
 - [Authors](#authors)
 
-
 ### Prerequisites
+
+**This plugin has not been tested on mongodb**
 
 Install plugin
 
-- recommend
+- Go to the project path
 
-  - `yarn add strapi-plugin-elasticsearch` 
+  - `cd PROJECT/plugins`
 
-- manual
+- Clone the project
 
-  - Install dependencies
+  - `git clone https://github.com/marefati110/strapi-plugin-elasticsearch.git`
 
-    - `yarn install` 
+- Install dependencies
 
-  - Go to the project path
-    - `cd project/plugins`
-
-  - Clone the project
-    - `git clone https://github.com/marefati110/strapi-plugin-elasticsearch.git`
-    - `mv -r strapi-plugin-elasticsearch elasticsearch`
-
+  - `yarn install`
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
-  - Go to the project path
-    - `cd project/plugins`
-  
-  - Create new config file
-    - `touch elasticsearch.js`
-   
-  - Copy [sample](docs/CONFIG.md) config file to elasticsearch.js
+- Go to `PROJECT/config/middleware.js` and add `"elastic"` to end of `load.before`
+- enable `elastic` middleware in setting
 
-  - Go to `project/config/middleware.js` and add `"elastic"` to end of `load.before`
+<img src="https://i.ibb.co/BKqjPy0/code.png">
 
 ## 🎈 Usage <a name="usage"></a>
 
-**SOON**
+After the first run of the project, it creates a config file at `PROJECT/config/elasticsearch.js`
 
-##  Contributing Guide <a name = "contributing"></a>
+**config file should look like the image**
 
+<img src="https://i.ibb.co/tPmhrJH/code2.png" >
+
+the plugin look at `api` folder and generate config for each model
+
+By default all settings are disabled for models and to activate it is enough to set enable to `true`
+
+after restarting project indices of active models are made in elasticsearch
+
+The settings of each model are as follows
+‍‍‍‍‍
+
+```js
+  {
+    model: 'modelName', // Project/api/**/models/MODEL.setting.json  info.name
+    plugin: null, // plugin name if exist
+    enable: false, // enable or disable model to sync with elasticsearch
+    index: 'modelNameIndex', // index name in elasticsearch
+    relations: [], // https://strapi.io/documentation/v3.x/concepts/queries.html#api-reference
+    conditions: {}, // https://strapi.io/documentation/v3.x/concepts/queries.html#api-reference
+    fillByResponse: false,
+    migration: false
+    urls: [], // some regexp
+  },
+```
+
+Patterns(regexp) can be defined for urls in the settings of each model
+This plugin finds the model of each request by matching the url of each request with the defined patterns.
+
+if `fillByResponse` is enabled `ctx.body` or response is stored in the elastic
+and if `fillByResponse` is disabled, it will first look for the `id` in `ctx.body`
+`ctx.params` and `ctx.query`, then the data is taken from database and stored in the elastic.
+
+
+## Contributing Guide <a name = "contributing"></a>
 
 ## ✍️ Authors <a name = ""></a>
 
