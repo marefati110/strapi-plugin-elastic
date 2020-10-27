@@ -20,7 +20,6 @@ module.exports = {
       });
 
       const elasticsearchConfig = elasticsearchConfigTemplate(modelsConfig);
-      console.log(configFilePath + configFileName);
       fs.writeFile(
         configFilePath + configFileName,
         elasticsearchConfig,
