@@ -5,18 +5,22 @@ const { migrateAllModels } = require('../services/core/migration');
 module.exports = {
   migrateAllModels: async (ctx) => {
     await ctx.send({
-      message: 'on progress',
+      message: 'on progress it can take a few minuets',
     });
 
     await migrateAllModels();
   },
   customMigrate: async (ctx) => {
-    /**
-     * @param(index)
-     * @param(service)
-     * @param(withRelated) // optional
-     * @param(importLimit) // optional
-     */
+    
+    // request body style
+    // }
+    //   model: 'model',
+    //   plugin: null,
+    //   index: 'appointment',
+    //   relations: [],
+    //   conditions: {},
+    // },
+
     const params = ctx.request.body;
     await strapi.elastic.migrateModel(params);
     await ctx.send('ok');
