@@ -12,20 +12,21 @@ module.exports = {
      * function will execute for all models
      */
     if (setting.removeExistIndexForMigration) {
-      await models.map(async (model) => {
-        await strapi.elastic.indices.delete({ index: model.index });
+      await models.forEach(async (model) => {
+        if (model.enable) {
+          await strapi.elastic.indices.delete({ index: model.index });
+        }
       });
     }
-
-    strapi.elastic.log.info('Import all model to elasticsearch.');
 
     /*
      * call migrateModel function for each model
      */
-    await models.map(async (model) => {
-      await migrateModel(model);
+    await models.forEach(async (model) => {
+      if (model.enable) {
+        await migrateModel(model);
+      }
     });
 
-    strapi.elastic.log.info('All models imported to elasticsearch.');
   },
 };

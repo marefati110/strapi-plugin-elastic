@@ -16,9 +16,10 @@ module.exports = {
     // define variable for progress bar
     let index_length = await strapi.services[model].count();
     index_length = parseInt(
-      index_length / (importLimit || setting.importLimit),
+      index_length / (importLimit || setting.importLimit)
     );
 
+    await strapi.elastic.log.debug(`Importing ${model} to elasticsearch`);
     // eslint-disable-next-line no-constant-condition
     while (true) {
       const start_sql = Date.now();
@@ -29,7 +30,7 @@ module.exports = {
           _start: (importLimit || setting.importLimit) * start,
           ...conditions,
         },
-        [...relations],
+        [...relations]
       );
 
       if (result.length === 0) return;
@@ -56,11 +57,11 @@ module.exports = {
       strapi.log.info(
         `(${start}/${
           index_length + 1
-        }) imported to ${index} | sql query takes ${parseInt(
-          (end_sql - start_sql) / 1000,
-        )}s and elasticsearch takes ${parseInt(
-          (end_elastic - start_elastic) / 1000,
-        )}s `,
+        }) Imported to ${index} index | sql query took ${parseInt(
+          (end_sql - start_sql) / 1000
+        )}s and insert to elasticsearch took ${parseInt(
+          (end_elastic - start_elastic) / 1000
+        )}s`
       );
       //
     }

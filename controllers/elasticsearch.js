@@ -1,13 +1,14 @@
 const _ = require('lodash');
 
-const { cron } = require('../services/core/migration');
+const { migrateAllModels } = require('../services/core/migration');
 
 module.exports = {
-  index: async (ctx) => {
-    cron();
-    ctx.send({
+  migrateAllModels: async (ctx) => {
+    await ctx.send({
       message: 'on progress',
     });
+
+    await migrateAllModels();
   },
   customMigrate: async (ctx) => {
     /**

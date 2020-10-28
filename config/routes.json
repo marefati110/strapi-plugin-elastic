@@ -1,9 +1,9 @@
 {
   "routes": [
     {
-      "method": "GET",
-      "path": "/",
-      "handler": "elasticsearch.index",
+      "method": "POST",
+      "path": "/migrateAllModels",
+      "handler": "elasticsearch.migrateAllModels",
       "config": {
         "policies": []
       }
