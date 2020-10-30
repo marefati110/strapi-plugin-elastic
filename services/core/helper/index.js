@@ -7,8 +7,9 @@ module.exports = {
     const enableModels = models.filter((model) => model.enable === true);
 
     await enableModels.forEach(async (model) => {
+      const indexName = model.index_postfix + model.index + model.index_postfix;
       try {
-        await strapi.elastic.indices.create({ index: model.index });
+        await strapi.elastic.indices.create({ index: indexName });
         strapi.elastic.log.debug(`${model.index} index created.`);
         // eslint-disable-next-line no-empty
       } catch (e) {}
