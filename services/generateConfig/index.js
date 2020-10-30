@@ -39,8 +39,10 @@ const modelConfigTemplate = (model) => ({
   index: model,
   relations: [],
   conditions: {},
-  fillByResponse: false,
+  fillByResponse: true,
   migration: false,
+  supportAdminPanel: true,
+  supportDefaultApis: true,
   urls: [],
 });
 
@@ -53,7 +55,7 @@ module.exports = ({ env }) => ({
     node: env('ELASTICSEARCH_HOST', 'http://127.0.0.1:9200'),
   },
   setting: {
-    version: 1,
+    configVersion: 1,
     validStatus: [200, 201],
     validMethod: ['PUT', 'POST', 'DELETE'],
     fillByResponse: false,
