@@ -1,4 +1,4 @@
-const { findModel } = require('./helpers');
+const { findModel, isContentManagerUrl } = require('./helpers');
 
 function checkRequest(ctx) {
   const { setting } = strapi.config.elasticsearch;
@@ -29,11 +29,21 @@ module.exports = {
     // import config from config file
     const { setting, models } = strapi.config.elasticsearch;
 
-    // find target model of request
-    const targetModel = await findModel({
+    let targetModel;
+    // try match reqUrl to content manager plugin
+    targetModel = await isContentManagerUrl({
       models,
       reqUrl: url,
     });
+
+    if (!targetModel) {
+      // find target model of request
+      targetModel = await findModel({
+        models,
+        reqUrl: url,
+      });
+    }
+
     if (!targetModel) return;
 
     // save response data to body variable - use when fillByResponse set to true

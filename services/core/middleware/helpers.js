@@ -12,4 +12,21 @@ module.exports = {
     //
     return res;
   },
+  isContentManagerUrl: async ({ models, reqUrl }) => {
+    const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)::([a-zA-Z-]+).(\w+)\/(\d*)/;
+
+    const result = reqUrl.match(contentManagerUrlPattern);
+
+    if (!result) return;
+
+    const [, , , model] = result;
+
+    const targetModel = await models.find(
+      (configModel) => configModel.model === model
+    );
+
+    if (!targetModel.enable) return;
+
+    return targetModel;
+  },
 };
