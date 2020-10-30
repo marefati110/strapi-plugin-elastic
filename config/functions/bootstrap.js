@@ -55,5 +55,13 @@ module.exports = async () => {
       setting: { saveToElastic: false },
     });
   } else {
+    strapi.log.info(
+      `
+           ________________Well come to Elasticsearch plugin___________________
+          |                                                                    |
+          |      The plugin automatically generate config file in /config      |
+          |______________________________Enjoy_________________________________|
+      `
+    );
   }
 };
