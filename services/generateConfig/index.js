@@ -55,7 +55,7 @@ module.exports = ({ env }) => ({
     node: env('ELASTICSEARCH_HOST', 'http://127.0.0.1:9200'),
   },
   setting: {
-    configVersion: 1,
+    version: 1,
     validStatus: [200, 201],
     validMethod: ['PUT', 'POST', 'DELETE'],
     fillByResponse: false,
