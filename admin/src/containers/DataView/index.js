@@ -34,7 +34,6 @@ const DataView = ({ data = [] }) => {
         : [],
     [data]
   );
-  console.log('tableRow ', tableData);
 
   return (
     <Wrapper className="col-md-7 col-sm-12">
