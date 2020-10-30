@@ -58,10 +58,10 @@ module.exports = ({ env }) => ({
     version: 1,
     validStatus: [200, 201],
     validMethod: ['PUT', 'POST', 'DELETE'],
-    fillByResponse: false,
+    fillByResponse: true,
     importLimit: 3000,
-    prefix: null,
-    postfix: null,
+    index_postfix: '',
+    index_postfix: '',
     removeExistIndexForMigration: false,
   },
   models: ${JSON.stringify(modelsConfig)}
