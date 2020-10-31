@@ -13,7 +13,7 @@ module.exports = {
     return res;
   },
   isContentManagerUrl: async ({ models, reqUrl }) => {
-    const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)::([a-zA-Z-]+).(\w+)\/(\d*)/;
+    const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)::([a-zA-Z-]+).(\w+)|\/(\d*)/;
 
     const result = reqUrl.match(contentManagerUrlPattern);
 

@@ -43,12 +43,11 @@ module.exports = {
         reqUrl: url,
       });
     }
-
+    
     if (!targetModel) return;
 
     // save response data to body variable - use when fillByResponse set to true
-    const { body } = ctx.response;
-
+    const { body } = ctx;
     // find id of record
     const pk = targetModel.pk || 'id';
     const id = body[pk] || ctx.params[pk] || ctx.query[pk];
