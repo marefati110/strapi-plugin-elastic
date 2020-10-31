@@ -33,16 +33,15 @@ module.exports = {
 
 const modelConfigTemplate = (model) => ({
   model,
+  enable: false,
   pk: 'id',
   plugin: null,
-  enable: false,
   index: model,
   relations: [],
   conditions: {},
   fillByResponse: true,
   migration: false,
   supportAdminPanel: true,
-  supportDefaultApis: true,
   urls: [],
 });
 
@@ -58,7 +57,6 @@ module.exports = ({ env }) => ({
     version: 1,
     validStatus: [200, 201],
     validMethod: ['PUT', 'POST', 'DELETE'],
-    fillByResponse: true,
     importLimit: 3000,
     index_postfix: '',
     index_postfix: '',

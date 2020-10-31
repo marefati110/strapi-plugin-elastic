@@ -1,4 +1,4 @@
-const { findModel, isContentManagerUrl } = require('./helpers');
+const { findModel, isContentManagerUrl, isDeleteAllUrl } = require('./helpers');
 
 function checkRequest(ctx) {
   const { setting } = strapi.config.elasticsearch;
@@ -29,21 +29,27 @@ module.exports = {
     // import config from config file
     const { setting, models } = strapi.config.elasticsearch;
 
-    let targetModel;
     // try match reqUrl to content manager plugin
-    targetModel = await isContentManagerUrl({
+    let targetModel = await isContentManagerUrl({
       models,
       reqUrl: url,
     });
 
-    if (!targetModel) {
-      // find target model of request
-      targetModel = await findModel({
+    targetModel =
+      targetModel ||
+      (await isDeleteAllUrl({
         models,
         reqUrl: url,
-      });
-    }
-    
+      }));
+
+    // find target model of request
+    targetModel =
+      targetModel ||
+      (await findModel({
+        models,
+        reqUrl: url,
+      }));
+
     if (!targetModel) return;
 
     // save response data to body variable - use when fillByResponse set to true
@@ -62,7 +68,7 @@ module.exports = {
     /*
      * insert or update data
      */
-    if (postOrPutMethod) {
+    if (postOrPutMethod && id) {
       let data;
       /*
        * collect data to insert to elasticsearch
@@ -93,7 +99,7 @@ module.exports = {
     /*
      * delete data from elasticsearch
      */
-    if (deleteMethod) {
+    if (deleteMethod && id) {
       await strapi.elastic.destroy(targetModel.index, id);
     }
   },
