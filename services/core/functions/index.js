@@ -1,44 +1,42 @@
 /* eslint-disable no-empty */
 module.exports = {
+  // need refactor
   find: async (index, query) => {
     try {
-      const elasticsearchResponse = await strapi.elastic.search({
+      const res = await strapi.elastic.search({
         index,
         ...query,
       });
-      return elasticsearchResponse;
-    } catch (e) {}
+      return res;
+    } catch (e) {
+      return null;
+    }
   },
   findOne: async (index, id) => {
     try {
-      const elasticsearchResponse = await strapi.elastic.get({
+      const res = await strapi.elastic.get({
         index,
         id,
       });
-      return elasticsearchResponse;
-    } catch (e) {}
+      return res;
+    } catch (e) {
+      return null;
+    }
   },
   destroy: async (index, id) => {
-    let elasticsearchResponse;
     try {
-      elasticsearchResponse = await strapi.elastic.delete({
+      const res = await strapi.elastic.delete({
         id,
         index,
       });
+      return res;
     } catch (e) {
-      console.error(e.message);
+      return null;
     }
-
-    if (elasticsearchResponse) {
-      return true;
-    }
-    return false;
   },
   createOrUpdate: async (index, id, data) => {
-    let elasticsearchResponse;
-
     try {
-      elasticsearchResponse = await strapi.elastic.update({
+      const res = await strapi.elastic.update({
         id,
         index,
         body: {
@@ -46,13 +44,9 @@ module.exports = {
           doc_as_upsert: true,
         },
       });
+      return res;
     } catch (e) {
-      strapi.log.error(e.message);
+      return null;
     }
-
-    if (elasticsearchResponse) {
-      return true;
-    }
-    return false;
   },
 };
