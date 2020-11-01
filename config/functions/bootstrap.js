@@ -5,12 +5,9 @@ const {
   helper: { checkEnableModels, checkNewVersion },
 } = require('../../services');
 const {
-  createOrUpdate,
-  destroy,
-  findOne,
-  find,
   migrateModel,
   log,
+  functions: { find, findOne, createOrUpdate, destroy, migrateById },
 } = require('../../services');
 
 module.exports = async () => {
@@ -38,6 +35,8 @@ module.exports = async () => {
 
     strapi.elastic.migrateModel = migrateModel;
 
+    strapi.elastic.migrateById = migrateById;
+
     // strapi.elasticsearch logs
     strapi.elastic.log = log;
 
@@ -57,7 +56,7 @@ module.exports = async () => {
   } else {
     strapi.log.info(
       `
-           ________________Well come to Elasticsearch plugin___________________
+           ________________Welcome to Elasticsearch plugin_____________________
           |                                                                    |
           |      The plugin automatically generate config file in /config      |
           |______________________________Enjoy_________________________________|

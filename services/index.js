@@ -6,6 +6,7 @@ const {
   find,
   migrateModel,
   helper,
+  functions,
 } = require('./core');
 
 const generateConfig = require('./generateConfig');
@@ -20,5 +21,6 @@ module.exports = {
   migrateModel,
   log,
   helper,
+  functions,
   generateConfig,
 };
