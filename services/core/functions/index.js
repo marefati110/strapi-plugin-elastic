@@ -49,4 +49,30 @@ module.exports = {
       return null;
     }
   },
+  migrateById: async (model, { id, id_in }) => {
+    const { models } = strapi.config.elasticsearch;
+
+    const targetModel = models.find((item) => item.model === model);
+
+    if (!targetModel) return null;
+
+    id_in = id_in || [id];
+
+    const data = await strapi
+      .query(targetModel.model, targetModel.plugin)
+      .find({ id_in: [...id_in], ...targetModel.conditions }, [
+        ...targetModel.relations,
+      ]);
+
+    if (!data) return null;
+
+    const body = await data.flatMap((doc) => [
+      {
+        index: { _index: targetModel.index, _id: doc[targetModel.pk || 'id'] },
+      },
+      doc,
+    ]);
+
+    await strapi.elastic.bulk({ refresh: true, body });
+  },
 };
