@@ -12,41 +12,62 @@ module.exports = {
       return null;
     }
   },
-  findOne: async (index, id) => {
+  findOne: async (model, { id }) => {
+    const { models } = strapi.config.elasticsearch;
+    const targetModel = models.find((item) => item.model === model);
+
+    if (!targetModel || !id) return null;
+
+    return strapi.elastic.get({
+      index: targetModel.index,
+      id,
+    });
+  },
+  destroy: async (model, { id, id_in }) => {
+    id_in = id_in || [id];
+
+    const { models } = strapi.config.elasticsearch;
+    const targetModel = models.find((item) => item.model === model);
+
+    if (!targetModel || !id_in) return null;
+
+    const body = await id_in.map((id) => {
+      return {
+        delete: {
+          _index: targetModel.index,
+          _type: '_doc',
+          _id: id,
+        },
+      };
+    });
+
     try {
-      const res = await strapi.elastic.get({
-        index,
-        id,
-      });
+      const res = await strapi.elastic.bulk({ body });
       return res;
     } catch (e) {
       return null;
     }
   },
-  destroy: async (index, id) => {
-    try {
-      const res = await strapi.elastic.delete({
-        id,
-        index,
+  createOrUpdate: async (model, { id, data }) => {
+    const { models } = strapi.config.elasticsearch;
+    const targetModel = models.find((item) => item.model === model);
+
+    if (!targetModel || !data) return null;
+
+    if (!id) {
+      return strapi.elastic.index({
+        index: targetModel.index,
+        body: data,
       });
-      return res;
-    } catch (e) {
-      return null;
-    }
-  },
-  createOrUpdate: async (index, id, data) => {
-    try {
-      const res = await strapi.elastic.update({
+    } else if (id) {
+      return strapi.elastic.update({
         id,
-        index,
+        index: targetModel.index,
         body: {
           doc: data,
           doc_as_upsert: true,
         },
       });
-      return res;
-    } catch (e) {
-      return null;
     }
   },
   migrateById: async (model, { id, id_in }) => {

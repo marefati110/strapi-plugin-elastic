@@ -94,13 +94,13 @@ module.exports = {
       /*
        * insert data to elasticsearch
        */
-      await strapi.elastic.createOrUpdate(targetModel.index, id, data);
+      await strapi.elastic.createOrUpdate(targetModel.model, { id, data });
     }
     /*
      * delete data from elasticsearch
      */
     if (deleteMethod && id) {
-      await strapi.elastic.destroy(targetModel.index, id);
+      await strapi.elastic.destroy(targetModel.model, { id });
     }
   },
 };

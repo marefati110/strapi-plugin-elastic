@@ -41,7 +41,7 @@ module.exports = async () => {
     strapi.elastic.log = log;
 
     // create  `strapi_elasticsearch` index
-    createOrUpdate('strapi_elastic_config', 1, { value: 1 });
+    createOrUpdate('strapi_elastic_config', { id: 1, data: { value: 1 } });
 
     // create index for enable models
     await checkEnableModels();
