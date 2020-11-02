@@ -1,4 +1,9 @@
-const { findModel, isContentManagerUrl, isDeleteAllUrl } = require('./helpers');
+const {
+  findModel,
+  isContentManagerUrl,
+  isDeleteAllUrl,
+  getDeleteIds,
+} = require('./helpers');
 
 function checkRequest(ctx) {
   const { setting } = strapi.config.elasticsearch;
@@ -54,6 +59,7 @@ module.exports = {
 
     // save response data to body variable - use when fillByResponse set to true
     const { body } = ctx;
+    const deleteIds = await getDeleteIds({ reqUrl: url, query: ctx.query });
     // find id of record
     const pk = targetModel.pk || 'id';
     const id = body[pk] || ctx.params[pk] || ctx.query[pk];
@@ -100,7 +106,9 @@ module.exports = {
      * delete data from elasticsearch
      */
     if (deleteMethod && id) {
-      await strapi.elastic.destroy(targetModel.model, { id });
+      await strapi.elastic.destroy(targetModel.model, {
+        id_in: deleteIds || id,
+      });
     }
   },
 };

@@ -56,5 +56,22 @@ module.exports = {
 
     return targetModel;
   },
+  getDeleteIds: async ({ query, reqUrl }) => {
+    const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)\/\w*::([a-zA-Z-]+).(\w+)|\/(\d*)/;
+
+    const result = reqUrl.test(contentManagerUrlPattern);
+
+    if (!result) return;
+
+    const ids = [];
+    for (const item of query) {
+      const key = Object.keys(item);
+      ids.push(query[key]);
+    }
+
+    console.log(ids);
+
+    return ids;
+  },
 };
 //
