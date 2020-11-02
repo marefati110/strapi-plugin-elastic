@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.8.0",
-    "moment": "^2.27.0"
+    "moment": "^2.27.0",
+    "axios": "^0.20.0",
+    "flat": "^5.0.2"
   },
   "author": {
     "name": "Ali Marefati",
