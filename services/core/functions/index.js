@@ -70,7 +70,7 @@ module.exports = {
       });
     }
   },
-  migrateById: async (model, { id, id_in }) => {
+  migrateById: async (model, { id, id_in, relations, conditions }) => {
     const { models } = strapi.config.elasticsearch;
 
     const targetModel = models.find((item) => item.model === model);
@@ -79,11 +79,12 @@ module.exports = {
 
     id_in = id_in || [id];
 
+    relations = relations || targetModel.relations;
+    conditions = conditions || targetModel.conditions;
+
     const data = await strapi
       .query(targetModel.model, targetModel.plugin)
-      .find({ id_in: [...id_in], ...targetModel.conditions }, [
-        ...targetModel.relations,
-      ]);
+      .find({ id_in: [...id_in], ...conditions }, [...relations]);
 
     if (!data) return null;
 
