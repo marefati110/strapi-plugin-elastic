@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 const {
   findModel,
   isContentManagerUrl,
@@ -51,8 +53,8 @@ module.exports = {
     const deleteIds = await getDeleteIds({ reqUrl: url, query: ctx.query });
     // find id of record
     const pk = targetModel.pk || 'id';
-    const id = body[pk] || ctx.params[pk] || ctx.query[pk];
-
+    const { id } =
+      _.pick(body, pk) || _.pick(ctx.params, pk) || _.pick(ctx.query, pk);
     /*
      * method validation
      */
@@ -68,13 +70,13 @@ module.exports = {
       /*
        * collect data to insert to elasticsearch
        */
-      if (setting.fillByResponse) {
+      if (targetModel.fillByResponse) {
         /*
          * fetch data from response body
          */
         data = body;
         //
-      } else if (!setting.fillByResponse) {
+      } else if (!targetModel.fillByResponse) {
         /*
          * fetch data by id using conditions and relation
          * defined in elasticsearch.js config file for model.
@@ -89,6 +91,7 @@ module.exports = {
       /*
        * insert data to elasticsearch
        */
+
       await strapi.elastic.createOrUpdate(targetModel.model, { id, data });
     }
     /*

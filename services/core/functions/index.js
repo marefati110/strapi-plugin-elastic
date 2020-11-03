@@ -49,7 +49,7 @@ module.exports = {
   },
   createOrUpdate: async (model, { id, data }) => {
     const { models } = strapi.config.elasticsearch;
-    const targetModel = models.find((item) => item.model === model);
+    const targetModel = await models.find((item) => item.model === model);
 
     if (!targetModel || !data) return null;
 

@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 module.exports = {
   checkRequest: (ctx) => {
     const { setting } = strapi.config.elasticsearch;
@@ -14,13 +16,32 @@ module.exports = {
     let res;
 
     await models.forEach((model) => {
-      model.urls.forEach((url) => {
-        const re = new RegExp(url);
-        const status = re.test(reqUrl);
-        if (status && model.enable) res = model;
+      model.urls.forEach((items) => {
+        const re = new RegExp(items);
+        if (_.isString(items)) {
+          const status = re.test(reqUrl);
+          if (status && model.enable) {
+            const targetModel = model;
+            res = targetModel;
+          }
+        } else if (_.isObject(items)) {
+          const urls = Object.keys(items);
+          for (const url of urls) {
+            const re = new RegExp(url);
+            const status = re.test(reqUrl);
+
+            if (status && model.enable) {
+              const targetModel = model;
+              targetModel.pk = items[url].pk;
+              targetModel.relations = items[url].relations || [];
+              targetModel.conditions = items[url].conditions || {};
+              targetModel.fillByResponse = items[url].fillByResponse || true;
+              res = targetModel;
+            }
+          }
+        }
       });
     });
-    //
     return res;
   },
   isContentManagerUrl: async ({ models, reqUrl }) => {
