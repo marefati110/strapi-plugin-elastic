@@ -3,19 +3,8 @@ const {
   isContentManagerUrl,
   isDeleteAllUrl,
   getDeleteIds,
+  checkRequest,
 } = require('./helpers');
-
-function checkRequest(ctx) {
-  const { setting } = strapi.config.elasticsearch;
-  let status = false;
-  if (
-    setting.validMethod.includes(ctx.request.method) &&
-    setting.validStatus.includes(ctx.response.status)
-  )
-    status = true;
-
-  return status;
-}
 
 module.exports = {
   elasticsearchManager: async (ctx) => {
@@ -105,10 +94,9 @@ module.exports = {
     /*
      * delete data from elasticsearch
      */
-    if (deleteMethod && id) {
-      await strapi.elastic.destroy(targetModel.model, {
-        id_in: deleteIds || id,
-      });
+    if (deleteMethod && (id || deleteIds)) {
+      const id_in = deleteIds.length !== 0 ? deleteIds : [id];
+      await strapi.elastic.destroy(targetModel.model, { id_in });
     }
   },
 };

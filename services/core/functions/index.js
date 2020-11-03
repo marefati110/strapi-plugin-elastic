@@ -42,8 +42,7 @@ module.exports = {
     });
 
     try {
-      const res = await strapi.elastic.bulk({ body });
-      return res;
+      return strapi.elastic.bulk({ body });
     } catch (e) {
       return null;
     }
@@ -95,6 +94,6 @@ module.exports = {
       doc,
     ]);
 
-    await strapi.elastic.bulk({ refresh: true, body });
+    return strapi.elastic.bulk({ refresh: true, body });
   },
 };

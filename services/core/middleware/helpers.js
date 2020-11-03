@@ -1,4 +1,15 @@
 module.exports = {
+  checkRequest: (ctx) => {
+    const { setting } = strapi.config.elasticsearch;
+    let status = false;
+    if (
+      setting.validMethod.includes(ctx.request.method) &&
+      setting.validStatus.includes(ctx.response.status)
+    )
+      status = true;
+
+    return status;
+  },
   findModel: async ({ reqUrl, models }) => {
     let res;
 
@@ -59,17 +70,15 @@ module.exports = {
   getDeleteIds: async ({ query, reqUrl }) => {
     const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)\/\w*::([a-zA-Z-]+).(\w+)|\/(\d*)/;
 
-    const result = reqUrl.test(contentManagerUrlPattern);
+    const result = contentManagerUrlPattern.test(reqUrl);
 
-    if (!result) return;
+    if (!result || !query) return;
 
     const ids = [];
-    for (const item of query) {
-      const key = Object.keys(item);
-      ids.push(query[key]);
+    const keys = Object.keys(query);
+    for (const key of keys) {
+      ids.push(+query[key]);
     }
-
-    console.log(ids);
 
     return ids;
   },
