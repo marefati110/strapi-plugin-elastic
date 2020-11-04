@@ -8,6 +8,9 @@ const Wrapper = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  height: 35px;
+  padding-left: 15px;
+  background-color: ${({ active }) => (active ? '#e9eaeb' : 'transparent')};
 
   svg {
     color: rgb(145, 155, 174);

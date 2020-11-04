@@ -16,6 +16,15 @@ const HomePage = () => {
   const [models, setModels] = useState([]);
   const [activeModel, setActiveModel] = useState({});
   const [modelData, setModelData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+
+  const onChangeParams = ({ target }) => {
+    if (target.name === 'params._page') {
+      setPage(target.value);
+    }
+  };
 
   useEffect(() => {
     // fetch all models
@@ -32,21 +41,37 @@ const HomePage = () => {
   useEffect(() => {
     if (activeModel && activeModel.index) {
       // fetch for the model data
-      request(`/strapi-plugin-elastic/model?index=${activeModel.index}`, {
-        method: 'GET',
-      }).then((res) => setModelData(res.data));
+      setLoading(true);
+      request(
+        `/strapi-plugin-elastic/model?index=${activeModel.index}&page=${page}&limit=${limit}`,
+        {
+          method: 'GET',
+        }
+      )
+        .then((res) => setModelData(res.data))
+
+        .finally(() => setLoading(false));
     }
-  }, [activeModel]);
+  }, [activeModel, page]);
 
   return (
     <div className="row">
       <GlobalStyle />
-      <LeftMenu
-        models={models}
-        activeModel={activeModel}
-        setActiveModel={setActiveModel}
-      />
-      <DataView data={modelData} />
+      <div className="d-flex w-100 px-3">
+        <LeftMenu
+          models={models}
+          activeModel={activeModel}
+          setActiveModel={setActiveModel}
+        />
+        <DataView
+          data={modelData}
+          activeModel={activeModel}
+          loading={loading}
+          page={page}
+          limit={limit}
+          onChangeParams={onChangeParams}
+        />
+      </div>
     </div>
   );
 };
