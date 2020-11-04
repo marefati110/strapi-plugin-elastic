@@ -1,10 +1,19 @@
 import React, { memo, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from '@buffetjs/core';
+import { LoadingBar } from '@buffetjs/styles';
+import { GlobalPagination } from 'strapi-helper-plugin';
 import Wrapper from './Wrapper';
 import { isObject } from 'lodash';
 
-const DataView = ({ data = [] }) => {
+const DataView = ({
+  data = [],
+  activeModel = '',
+  loading,
+  page,
+  limit,
+  onChangeParams,
+}) => {
   const tableHeaders = useMemo(
     () =>
       data && data.length
@@ -17,7 +26,6 @@ const DataView = ({ data = [] }) => {
     () =>
       data && data.length
         ? data.map((dataObject) => {
-            console.log('data', dataObject);
             let newObj = {};
             if (!dataObject) return newObj;
 
@@ -36,14 +44,36 @@ const DataView = ({ data = [] }) => {
   );
 
   return (
-    <Wrapper className="col-md-7 col-sm-12">
-      <Table headers={tableHeaders} rows={tableData} />
+    <Wrapper>
+      <h2>{activeModel?.index?.toUpperCase()}</h2>
+      {loading ? (
+        <LoadingBar />
+      ) : (
+        <>
+          <Table headers={tableHeaders} rows={tableData} />
+          <div className="mt-5">
+            <GlobalPagination
+              count={10}
+              onChangeParams={onChangeParams}
+              params={{
+                _limit: limit,
+                _page: page,
+              }}
+            />
+          </div>
+        </>
+      )}
     </Wrapper>
   );
 };
 
 DataView.propTypes = {
   data: PropTypes.array.isRequired,
+  activeModel: PropTypes.string.isRequired,
+  loading: PropTypes.bool.isRequired,
+  page: PropTypes.number.isRequired,
+  limit: PropTypes.number.isRequired,
+  onChangeParams: PropTypes.func.isRequired,
 };
 
 export default memo(DataView);

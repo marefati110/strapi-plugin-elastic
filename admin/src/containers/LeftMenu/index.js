@@ -5,8 +5,8 @@ import LeftMenuItem from '../../Components/LeftMenuItem';
 
 const LeftMenu = ({ models, activeModel, setActiveModel }) => {
   return (
-    <Wrapper className="col-md-3 col-sm-12">
-      <h4>models</h4>
+    <Wrapper>
+      <h4 className="p-3">Models</h4>
       <hr />
       {models && models.length
         ? models.map((model) => (
