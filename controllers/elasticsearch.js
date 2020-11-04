@@ -1,5 +1,5 @@
 const _ = require('lodash');
-
+const flatten = require('flat');
 const { migrateAllModels } = require('../services/core/migration');
 
 module.exports = {
@@ -11,7 +11,6 @@ module.exports = {
     await migrateAllModels();
   },
   customMigrate: async (ctx) => {
-    
     // request body style
     // }
     //   model: 'model',
@@ -51,9 +50,16 @@ module.exports = {
         },
       },
     });
-
     if (data.statusCode !== 200) return ctx.badRequest();
 
-    return ctx.send({ data: data.body.hits.hits });
+    const res = [];
+    for (const item of data.body.hits.hits) {
+      const source = item['_source'];
+      if (!_.isEmpty(source)) {
+        res.push(flatten(source));
+      }
+    }
+
+    return ctx.send({ data: res });
   },
 };

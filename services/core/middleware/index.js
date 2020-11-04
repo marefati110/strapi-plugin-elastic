@@ -1,16 +1,12 @@
-const { findModel } = require('./helpers');
+const _ = require('lodash');
 
-function checkRequest(ctx) {
-  const { setting } = strapi.config.elasticsearch;
-  let status = false;
-  if (
-    setting.validMethod.includes(ctx.request.method) &&
-    setting.validStatus.includes(ctx.response.status)
-  )
-    status = true;
-
-  return status;
-}
+const {
+  findModel,
+  isContentManagerUrl,
+  isDeleteAllUrl,
+  getDeleteIds,
+  checkRequest,
+} = require('./helpers');
 
 module.exports = {
   elasticsearchManager: async (ctx) => {
@@ -29,20 +25,36 @@ module.exports = {
     // import config from config file
     const { setting, models } = strapi.config.elasticsearch;
 
-    // find target model of request
-    const targetModel = await findModel({
+    // try match reqUrl to content manager plugin
+    let targetModel = await isContentManagerUrl({
       models,
       reqUrl: url,
     });
+
+    targetModel =
+      targetModel ||
+      (await isDeleteAllUrl({
+        models,
+        reqUrl: url,
+      }));
+
+    // find target model of request
+    targetModel =
+      targetModel ||
+      (await findModel({
+        models,
+        reqUrl: url,
+      }));
+
     if (!targetModel) return;
 
     // save response data to body variable - use when fillByResponse set to true
-    const { body } = ctx.response;
-
+    const { body } = ctx;
+    const deleteIds = await getDeleteIds({ reqUrl: url, query: ctx.query });
     // find id of record
     const pk = targetModel.pk || 'id';
-    const id = body[pk] || ctx.params[pk] || ctx.query[pk];
-
+    const { id } =
+      _.pick(body, pk) || _.pick(ctx.params, pk) || _.pick(ctx.query, pk);
     /*
      * method validation
      */
@@ -53,18 +65,18 @@ module.exports = {
     /*
      * insert or update data
      */
-    if (postOrPutMethod) {
+    if (postOrPutMethod && id) {
       let data;
       /*
        * collect data to insert to elasticsearch
        */
-      if (setting.fillByResponse) {
+      if (targetModel.fillByResponse) {
         /*
          * fetch data from response body
          */
         data = body;
         //
-      } else if (!setting.fillByResponse) {
+      } else if (!targetModel.fillByResponse) {
         /*
          * fetch data by id using conditions and relation
          * defined in elasticsearch.js config file for model.
@@ -79,13 +91,15 @@ module.exports = {
       /*
        * insert data to elasticsearch
        */
-      await strapi.elastic.createOrUpdate(targetModel.index, id, data);
+
+      await strapi.elastic.createOrUpdate(targetModel.model, { id, data });
     }
     /*
      * delete data from elasticsearch
      */
-    if (deleteMethod) {
-      await strapi.elastic.destroy(targetModel.index, id);
+    if (deleteMethod && (id || deleteIds)) {
+      const id_in = deleteIds.length !== 0 ? deleteIds : [id];
+      await strapi.elastic.destroy(targetModel.model, { id_in });
     }
   },
 };

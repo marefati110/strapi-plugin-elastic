@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from '@buffetjs/core';
 import Wrapper from './Wrapper';
 import LeftMenuItem from '../../Components/LeftMenuItem';
 
