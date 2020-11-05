@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { colors, sizes } from 'strapi-helper-plugin';
 
 const Wrapper = styled.div`
-  width: 300px;
+  width: 20%;
   height: calc(100vh - ${sizes.header.height});
   overflow-y: auto;
   overflow-x: hidden;
