@@ -49,7 +49,6 @@ const HomePage = () => {
         }
       )
         .then((res) => setModelData(res.data))
-
         .finally(() => setLoading(false));
     }
   }, [activeModel, page]);
