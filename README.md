@@ -16,13 +16,13 @@
 </div>
 
 <hr >
-<h2 align="center">
+<h4 align="center">
   This plugin has not been tested on mongodb
-</h2>
+</h4>
 <hr/>
 
-<p align="center"> Few lines describing your project.
-    <br> 
+<p align="center"> 
+  The purpose of developing this plugin is to use the elastic search engine in Strapi to help the application development process
 </p>
 
 <hr/>
