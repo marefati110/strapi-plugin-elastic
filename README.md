@@ -2,10 +2,9 @@
   <a href="https://github.com/marefati110/strapi-plugin-elastic" rel="noopener">
  <img src="https://i.ibb.co/zG6Nj3g/Untitled-1.jpg" alt="Project logo"></a>
   <br/>
-  <img width="100%" align="center" src="https://i.ibb.co/BqgGthL/plugin.png" alt="plugin" border="1">
+  <br/>
+  <img width="90%" align="center" src="https://i.ibb.co/BqgGthL/plugin.png" alt="plugin" border="1">
 </p>
-
-<!-- <h3 align="center">strapi elasticsearch</h3> -->
 
 <div align="center">
 
@@ -16,13 +15,17 @@
 
 </div>
 
-<h1 align='center'>under construction</h1>
-
----
+<hr >
+<h2 align="center">
+  This plugin has not been tested on mongodb
+</h2>
+<hr/>
 
 <p align="center"> Few lines describing your project.
     <br> 
 </p>
+
+<hr/>
 
 ## 📝 Table of Contents
 
@@ -31,9 +34,11 @@
 - [Contributing Guide](#CONTRIBUTING)
 - [Authors](#authors)
 
-### Prerequisites
+## Prerequisites <a name="prerequisites"></a>
 
-**This plugin has not been tested on mongodb**
+<hr />
+
+Install Elasticsearch - https://www.elastic.co/downloads/elasticsearch
 
 Install plugin
 
@@ -54,48 +59,305 @@ Install plugin
 - Go to `PROJECT/config/middleware.js` and add `"elastic"` to end of `load.before`
 - enable `elastic` middleware in setting
 
-<img src="https://i.ibb.co/BKqjPy0/code.png">
+<p align="center">
+<img src="https://i.ibb.co/kS5Cb1t/code4.png" alt="code4" border="0">
+<br>
+final result should be like the image
+</p>
 
-## 🎈 Usage <a name="usage"></a>
+<hr/>
+
+# How plugin works? <a name="how_work"></a>
 
 After the first run of the project, it creates a config file at `PROJECT/config/elasticsearch.js`
 
 **config file should look like the image**
 
-<img src="https://i.ibb.co/tPmhrJH/code2.png" >
+<p align="center">
+<img src="https://i.ibb.co/2yCbbmp/code3.png" alt="code3" border="0">
+</p>
 
-the plugin look at `api` folder and generate config for each model
+By default, syncing occurs in two ways
 
-By default all settings are disabled for models and to activate it is enough to set enable to `true`
+The answer of any request that makes a change in the model is stored in Elasticsearch this is especially true for the Strap panel admin
 
-after restarting project indices of active models are made in elasticsearch
+Or in response to any request, search for the pk of model the model in which the change was made, and after retrieving the information from the database, stores it in the elasticsearch
 
-The settings of each model are as follows
-‍‍‍‍‍
+In the following, solutions are prepared for more complex scenarios.
+
+After installing the plugin and running it, it creates an config file in the `PROJECT/config/elasticsearch.js`
+
+In the connections section, the settings related to the connection to the elasticsearch are listed, there is also a help link
+
+In the setting section, there are the initial settings related to the elastic plugin
+
+In the models section for all models in the `Project/api/**` path there is a model being built and you can change the initial settings
+
+<hr/>
+
+# 🎈 Usage <a name="usage"></a>
+
+### Scenario 1 <a name="scenario-1"></a>
+
+For example, we want to make changes to the article model and then see the changes in the Elasticsearch.
+
+The first step is to activate in the settings related to this model
+
+After saving and restarting the plugin, it creates an index for this model in the elasticsearch.
+
+Note that the name selected for the index can be changed in the settings of the model.
+
+At the end of the settings should be as follows
 
 ```js
-  {
-    model: 'modelName', // Project/api/**/models/MODEL.setting.json  info.name
-    plugin: null, // plugin name if exist
-    enable: false, // enable or disable model to sync with elasticsearch
-    index: 'modelNameIndex', // index name in elasticsearch
-    relations: [], // https://strapi.io/documentation/v3.x/concepts/queries.html#api-reference
-    conditions: {}, // https://strapi.io/documentation/v3.x/concepts/queries.html#api-reference
-    fillByResponse: false,
-    migration: false
-    urls: [], // some regexp
-  },
+{
+  model: 'article',
+  pk: 'id',
+  plugin: null, // changed to true
+  enable: true,
+  index: 'article',
+  relations: [],
+  conditions: {},
+  supportAdminPanel: true,
+  fillByResponse: true,
+  migration: false,
+  urls: [],
+},
 ```
 
-Patterns(regexp) can be defined for urls in the settings of each model
-This plugin finds the model of each request by matching the url of each request with the defined patterns.
+Now in the strapi admin panel, by making an creating , deleting or updating , you can see the changes in Elasticsearch.
 
-if `fillByResponse` is enabled `ctx.body` or response is stored in the elastic
-and if `fillByResponse` is disabled, it will first look for the `id` in `ctx.body`
-`ctx.params` and `ctx.query`, then the data is taken from database and stored in the elastic.
+### Scenario 2 <a name="scenario-2"></a>
 
-## Contributing Guide <a name = "contributing"></a>
+In this scenario, we want to make a change in the model using the rest api and see the result in Elasticsearch.
 
-## ✍️ Authors <a name = ""></a>
+After sending a post request to `/articles`, changes will be applied and we will receive a response to this
+
+```json
+{
+  "id": 1,
+  "title": "title",
+  "content": "content"
+}
+```
+
+and model config should change to
+
+```js
+{
+  model: 'article',
+  pk: 'id',
+  plugin: null,
+  enable: true,
+  index: 'article',
+  relations: [],
+  conditions: {},
+  supportAdminPanel: true,
+  fillByResponse: true, // default value
+  migration: false,
+  urls: ['/articles'], //changed
+},
+```
+
+If the `fillByResponse` settings are enabled for the model, the same data will be stored in Elasticsearch, otherwise the data will be retrieved from the database using pk and stored in Elasticsearch.
+
+### Scenario 3 <a name="scenario-3"></a>
+
+This scenario is quite similar to the previous scenario with these differences being the response
+
+```json
+{
+  "metaData": null,
+  "data": {
+    "articleID": 1,
+    "title": "title",
+    "content": "content"
+  }
+}
+```
+
+By default, the plugin looks for pk in the response or `ctx.body.id`
+
+We can rewrite these settings for a specific url
+
+config model should change to
+
+```js
+{
+  model: 'article',
+  pk: 'id',
+  plugin: null,
+  enable: true,
+  index: 'article',
+  relations: [],
+  conditions: {},
+  supportAdminPanel: true,
+  fillByResponse: true,
+  migration: false,
+  urls: [
+    {
+      '/articles':{
+        pk: 'data.articleID',  // over write
+        relations: [],  // over write
+        conditions: {}, // over write
+      }
+    }
+  ],
+},
+```
+
+### Scenario 4 <a name="scenario-4"></a>
+
+In this scenario, no pk may be found in the request response
+
+```json
+{
+  "success": true
+}
+```
+
+In this case, the synchronization operation can be performed on the controller
+
+there is some functions for help
+
+```js
+const articleData = { title: 'title', content: 'content' };
+const article = await strapi.query('article').create(articleData);
+
+strapi.elastic.createOrUpdate('article', { data: article, id: article.id });
+// or
+strapi.elastic.migrateById('article', { id: article.id }); // execute new query
+```
+
+and for delete data
+
+```js
+const articleId = 1;
+const article = await strapi.query('article').delete(articleData);
+
+strapi.elastic.destroy('article', { id: articleID });
+```
+
+# Functions <a name="functions"></a>
+
+| Command                         | Description                    |           example            |
+| :------------------------------ | :----------------------------- | :--------------------------: |
+| `strapi.elastic`                | official elasticsearch package |     [example](#elastic)      |
+| `strapi.elastic.createOrUpdate` | Create to update data          | [example](#create_or_update) |
+| `strapi.elastic.findOne`        | Find specific data by id       |     [example](#findOne)      |
+| `strapi.elastic.destroy`        | delete data                    |     [example](#destroy)      |
+| `strapi.elastic.migrateById`    | migrate data                   |   [example](#migrateById)    |
+| `strapi.elastic.migrateModel`   | migrate specific data          |   [example](#migrateModel)   |
+| `strapi.elastic.models`         | migrate all enable models      |      [example](#models)      |
+| `strapi.log`                    | log data to elasticsearch      | [example](#create_or_update) |
+
+# Api <a name="api"></a>
+
+| Url             | Method | Description               | body                   |
+| :-------------- | :----: | :------------------------ | ---------------------- |
+| /migrate-models |  POST  | Migrate all enable Models |                        |
+| /migrate-Model  |  POST  | Migrate specific model    | `{model:'MODEL_NAME'}` |
+
+# Examples <a name="example"></a>
+
+### elastic
+
+For use official Elasticsearch package we can use `strapi.elastic`, and can access builtin function
+[elasticsearch reference api](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html)
+
+```js
+const count = strapi.elastic.count({ index: 'article' }); // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html#_count
+
+const article = strapi.elastic.get({ index: 'article', id: 1 }); // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html#_get
+```
+
+### CreateOrUpdate <a name="create_or_update"></a>
+
+```js
+const result = strapi.elastic.createOrUpdate('article', {
+  id: 1,
+  data: { title: 'title', content: 'content' },
+});
+```
+
+### findOne <a name="findOne"></a>
+
+```js
+const result = strapi.elastic.findOne('article', { id: 1 });
+```
+
+### destroy <a name="destroy"></a>
+
+```js
+const result_one = strapi.elastic.destroy('article', { id: 1 });
+// or
+const result_two = strapi.elastic.destroy('article', { id_in: [1, 2, 3] });
+```
+
+### migrateById <a name="migrateById"></a>
+
+```js
+const result_one = strapi.elastic.migrateById('article', { id: 1 });
+
+const result_two = strapi.elastic.migrateById('article', { id_in: [1, 2, 3] });
+```
+
+### migrateModel <a name="migrateModel"></a>
+
+```js
+const result = strapi.elastic.migrateModel('article', {
+  relations, // optional
+  conditions, // optional
+});
+```
+
+### migrateModels <a name="migrateModels"></a>
+
+```js
+const result = strapi.elastic.migrateModels();
+```
+
+# Logging
+
+strapi use Pino to logging but can store logs or send it to elasticsearch
+
+at now wen can send logs to elasticsearch by `strapi.elastic.log` there is no difference between `strapi.elastic.log` with `strapi.log` to call functions.
+
+```js
+strapi.log.info('log message in console');
+strapi.elastic.log.info('log message console and store it to elasticsearch');
+
+strapi.log.debug('log message');
+strapi.elastic.log.debug('log message console and store it to elasticsearch');
+
+strapi.log.warn('log message');
+strapi.elastic.log.warn('log message console and store it to elasticsearch');
+
+strapi.log.error('log message');
+strapi.elastic.log.error('log message console and store it to elasticsearch');
+
+strapi.log.fatal('log message');
+strapi.elastic.log.fatal('log message console and store it to elasticsearch');
+```
+
+also there is some more options
+
+```js
+// just send log to elastic and avoid to display in console
+strapi.elastic.log.info('some message', { setting: { show: false } });
+
+// just display ni console and avoid to save it to elastic search
+strapi.elastic.log.info('some message', { setting: { saveToElastic: false } });
+
+// send more data to elasticsearch
+const logData = { description: 'description' };
+strapi.elastic.log.info('some message', logData);
+```
+
+**By default `strapi.log` send some metaData to elasticsearch such as `free memory`, `cpu load avg`, `current time`, `hostname` ,...**
+
+### Contributing Guide <a name = "contributing"></a>
+
+### ✍️ Authors <a name = ""></a>
 
 - [@marefati110](https://github.com/marefati110)
