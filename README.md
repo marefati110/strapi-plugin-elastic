@@ -1,6 +1,8 @@
 <p align="center">
-  <a href="" rel="noopener">
+  <a href="https://github.com/marefati110/strapi-plugin-elastic" rel="noopener">
  <img src="https://i.ibb.co/zG6Nj3g/Untitled-1.jpg" alt="Project logo"></a>
+  <br/>
+  <img width="100%" align="center" src="https://i.ibb.co/BqgGthL/plugin.png" alt="plugin" border="1">
 </p>
 
 <!-- <h3 align="center">strapi elasticsearch</h3> -->
