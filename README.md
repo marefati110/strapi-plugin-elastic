@@ -29,9 +29,18 @@
 
 ## 📝 Table of Contents
 
+- [Prerequisites](#prerequisites)
 - [Getting Started](#getting_started)
+- [How plugin work](#how_work)
 - [Usage](#usage)
-- [Contributing Guide](#CONTRIBUTING)
+  - [scenario 1](#scenario-1)
+  - [scenario 2](#scenario-2)
+  - [scenario 3](#scenario-3)
+  - [scenario 4](#scenario-4)
+- [Functions](#functions)
+- [Api](#api)
+- [Example](#example)
+- [Logging](#logging)
 - [Authors](#authors)
 
 ## Prerequisites <a name="prerequisites"></a>
@@ -317,7 +326,7 @@ const result = strapi.elastic.migrateModel('article', {
 const result = strapi.elastic.migrateModels();
 ```
 
-# Logging
+# Logging <a name="logging"></a>
 
 strapi use Pino to logging but can store logs or send it to elasticsearch
 
@@ -356,8 +365,6 @@ strapi.elastic.log.info('some message', logData);
 
 **By default `strapi.log` send some metaData to elasticsearch such as `free memory`, `cpu load avg`, `current time`, `hostname` ,...**
 
-### Contributing Guide <a name = "contributing"></a>
 
 ### ✍️ Authors <a name = ""></a>
-
 - [@marefati110](https://github.com/marefati110)
