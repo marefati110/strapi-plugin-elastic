@@ -2,7 +2,7 @@
   "routes": [
     {
       "method": "POST",
-      "path": "/migrateAllModels",
+      "path": "/migrate-Models",
       "handler": "elasticsearch.migrateAllModels",
       "config": {
         "policies": []
@@ -26,7 +26,7 @@
     },
     {
       "method": "POST",
-      "path": "/migrate",
+      "path": "/migrate-model",
       "handler": "elasticsearch.customMigrate",
       "config": {
         "policies": []
