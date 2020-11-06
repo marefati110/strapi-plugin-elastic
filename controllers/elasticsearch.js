@@ -1,42 +1,42 @@
 const _ = require('lodash');
 const flatten = require('flat');
-const { migrateAllModels } = require('../services/core/migration');
+const {
+  migration: { migrateModel, migrateModels },
+} = require('../services');
 
 module.exports = {
-  migrateAllModels: async (ctx) => {
+  migrateModels: async (ctx) => {
     await ctx.send({
       message: 'on progress it can take a few minuets',
     });
 
-    await migrateAllModels();
+    migrateModels();
   },
-  customMigrate: async (ctx) => {
-    // request body style
-    // }
-    //   model: 'model',
-    //   plugin: null,
-    //   index: 'appointment',
-    //   relations: [],
-    //   conditions: {},
-    // },
-
-    const params = ctx.request.body;
-    await strapi.elastic.migrateModel(params);
-    await ctx.send('ok');
+  migrateModel: async (ctx) => {
+    const { model } = ctx.request.body;
+    try {
+      await strapi.elastic.migrateModel(model);
+      return ctx.send({ success: true });
+    } catch (e) {
+      return ctx.throw(500);
+    }
   },
-
   fetchModels: (ctx) => {
     const { models } = strapi.config.elasticsearch;
 
-    const availableModels = models.filter((model) => model.enable === true);
-
     const response = _.map(
-      availableModels,
-      _.partialRight(_.pick, ['model', 'plugin', 'index', 'migration', 'pk'])
+      models,
+      _.partialRight(_.pick, [
+        'model',
+        'plugin',
+        'index',
+        'migration',
+        'pk',
+        'enable',
+      ])
     );
     return ctx.send(response);
   },
-
   fetchModel: async (ctx) => {
     const { index, _start, _limit } = ctx.query;
 
@@ -50,6 +50,7 @@ module.exports = {
         },
       },
     });
+
     if (data.statusCode !== 200) return ctx.badRequest();
 
     const res = [];

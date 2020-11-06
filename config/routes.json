@@ -3,7 +3,15 @@
     {
       "method": "POST",
       "path": "/migrate-Models",
-      "handler": "elasticsearch.migrateAllModels",
+      "handler": "elasticsearch.migrateModels",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/migrate-model",
+      "handler": "elasticsearch.migrateModel",
       "config": {
         "policies": []
       }
@@ -20,14 +28,6 @@
       "method": "GET",
       "path": "/model",
       "handler": "elasticsearch.fetchModel",
-      "config": {
-        "policies": []
-      }
-    },
-    {
-      "method": "POST",
-      "path": "/migrate-model",
-      "handler": "elasticsearch.customMigrate",
       "config": {
         "policies": []
       }

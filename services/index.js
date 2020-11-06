@@ -4,7 +4,7 @@ const {
   elasticsearchManager,
   findOne,
   find,
-  migrateModel,
+  migration,
   helper,
   functions,
 } = require('./core');
@@ -18,7 +18,7 @@ module.exports = {
   destroy,
   elasticsearchManager,
   findOne,
-  migrateModel,
+  migration,
   log,
   helper,
   functions,
