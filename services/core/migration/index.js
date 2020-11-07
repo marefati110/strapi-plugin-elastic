@@ -1,4 +1,7 @@
-const migrateModel = async (model) => {
+const migrateModel = async (model, params = {}) => {
+  // specific condition
+  params.conditions = params.conditions || {};
+
   const { models, setting } = strapi.config.elasticsearch;
   const targetModel = models.find((item) => item.model === model);
 
@@ -27,6 +30,7 @@ const migrateModel = async (model) => {
           _limit: setting.importLimit,
           _start: setting.importLimit * start,
           ...targetModel.conditions,
+          ...params.conditions,
         },
         [...targetModel.relations]
       );
@@ -76,11 +80,13 @@ const migrateModel = async (model) => {
     //
   }
 };
-const migrateModels = async () => {
+const migrateModels = async (params = {}) => {
   const { setting, models } = strapi.config.elasticsearch;
 
+  params.models = params.models || [];
+  params.conditions = params.conditions || {};
+
   // remove elasticsearch index before migration
-  // function will execute for all models
   if (setting.removeExistIndexForMigration) {
     await models.forEach(async (model) => {
       if (model.enable && model.migration) {
@@ -88,9 +94,21 @@ const migrateModels = async () => {
       }
     });
   }
-  // call migrateModel function for each model
-  for (const item of models) {
-    await migrateModel(item.model);
+
+  if (params.models.length !== 0) {
+    const targetModels = models.filter((item) =>
+      params.models.includes(item.model)
+    );
+
+    // call migrateModel function for each model
+    for (const item of targetModels) {
+      await migrateModel(item.model, params.conditions);
+    }
+  } else {
+    // call migrateModel function for each model
+    for (const item of models) {
+      await migrateModel(item.model, params.conditions);
+    }
   }
 
   strapi.log.info(`All models imported...`);
