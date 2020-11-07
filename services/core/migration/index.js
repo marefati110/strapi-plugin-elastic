@@ -2,21 +2,24 @@ const migrateModel = async (model) => {
   const { models, setting } = strapi.config.elasticsearch;
   const targetModel = models.find((item) => item.model === model);
 
-  if (!targetModel || !targetModel.enable || !targetModel.migration)
+  if (
+    !targetModel ||
+    targetModel.enable === false ||
+    targetModel.migration === false
+  )
     return null;
 
   let start = 0;
-
+  strapi.elastic.log.debug(`Importing ${targetModel.model} to elasticsearch`);
   // define variable for progress bar
   let index_length = await strapi.services[targetModel.model].count();
   index_length = parseInt(index_length / setting.importLimit);
-
-  strapi.elastic.log.debug(`Importing ${targetModel.model} to elasticsearch`);
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const start_sql = Date.now();
 
+    strapi.log.debug(`Getting ${targetModel.model} model data from database`);
     const result = await strapi
       .query(targetModel.model, targetModel.plugin)
       .find(
@@ -28,12 +31,15 @@ const migrateModel = async (model) => {
         [...targetModel.relations]
       );
 
-    if (result.length === 0) return;
+    if (result.length === 0) {
+      return;
+    }
+
     //
     const end_sql = Date.now();
     //
 
-    const body = result.flatMap((doc) => [
+    const body = await result.flatMap((doc) => [
       {
         index: {
           _index: targetModel.index,
@@ -46,9 +52,12 @@ const migrateModel = async (model) => {
     const start_elastic = Date.now();
     //
     try {
+      strapi.log.debug(
+        `Sending ${targetModel.model} model to elasticsearch...`
+      );
       await strapi.elastic.bulk({ refresh: true, body });
     } catch (e) {
-      strapi.elastic.log.error(e);
+      strapi.log.error(e);
     }
     //
     const end_elastic = Date.now();
@@ -79,11 +88,12 @@ const migrateModels = async () => {
       }
     });
   }
-
   // call migrateModel function for each model
-  await models.forEach(async (model) => {
-    await migrateModel(model);
-  });
+  for (const item of models) {
+    await migrateModel(item.model);
+  }
+
+  strapi.log.info(`All models imported...`);
 };
 
 module.exports = { migrateModels, migrateModel };

@@ -5,8 +5,8 @@ const {
   helper: { checkEnableModels, checkNewVersion },
 } = require('../../services');
 const {
-  migrateModel,
   log,
+  migration: { migrateModel, migrateModels },
   functions: { find, findOne, createOrUpdate, destroy, migrateById },
 } = require('../../services');
 
@@ -34,6 +34,8 @@ module.exports = async () => {
     strapi.elastic.createOrUpdate = createOrUpdate;
 
     strapi.elastic.migrateModel = migrateModel;
+
+    strapi.elastic.migrateModels = migrateModels;
 
     strapi.elastic.migrateById = migrateById;
 
