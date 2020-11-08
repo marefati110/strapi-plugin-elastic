@@ -258,7 +258,7 @@ strapi.elastic.destroy('article', { id: articleID });
 | `strapi.elastic.migrateById`    | migrate data                   |   [example](#migrateById)    |
 | `strapi.elastic.migrateModel`   | migrate specific data          |   [example](#migrateModel)   |
 | `strapi.elastic.models`         | migrate all enable models      |      [example](#models)      |
-| `strapi.log`                    | log data to elasticsearch      | [example](#create_or_update) |
+| `strapi.log`                    | log data to elasticsearch      |     [example](#logging)      |
 
 # Api <a name="api"></a>
 
@@ -315,7 +315,6 @@ const result_two = strapi.elastic.migrateById('article', { id_in: [1, 2, 3] });
 
 ```js
 const result = strapi.elastic.migrateModel('article', {
-  relations, // optional
   conditions, // optional
 });
 ```
@@ -323,7 +322,9 @@ const result = strapi.elastic.migrateModel('article', {
 ### migrateModels <a name="migrateModels"></a>
 
 ```js
-const result = strapi.elastic.migrateModels();
+const result = strapi.elastic.migrateModels({
+  conditions, // optional (the conditions apply on all models)
+});
 ```
 
 # Logging <a name="logging"></a>
@@ -349,13 +350,13 @@ strapi.log.fatal('log message');
 strapi.elastic.log.fatal('log message console and store it to elasticsearch');
 ```
 
-also there is some more options
+Also there is some more options
 
 ```js
 // just send log to elastic and avoid to display in console
 strapi.elastic.log.info('some message', { setting: { show: false } });
 
-// just display ni console and avoid to save it to elastic search
+// just display  relations, // optional ni console and avoid to save it to elastic search
 strapi.elastic.log.info('some message', { setting: { saveToElastic: false } });
 
 // send more data to elasticsearch
@@ -365,6 +366,19 @@ strapi.elastic.log.info('some message', logData);
 
 **By default `strapi.log` send some metaData to elasticsearch such as `free memory`, `cpu load avg`, `current time`, `hostname` ,...**
 
+# Tricks
+
+to avoid config plugin for all model or write a lot of code we can create cron job for migration
+
+```js
+module.exports = {
+  '*/10 * * * *': () => {
+    const t = new Date()
+    strapi.elastic.migrateModels({ conditions: { updated_at_gt: t.setDate(t.getMinute() - 10); } });
+  },
+};
+```
 
 ### ✍️ Authors <a name = ""></a>
+
 - [@marefati110](https://github.com/marefati110)
