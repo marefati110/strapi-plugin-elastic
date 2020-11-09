@@ -11,6 +11,7 @@ const Wrapper = styled.div`
   height: 35px;
   padding-left: 15px;
   background-color: ${({ active }) => (active ? '#e9eaeb' : 'transparent')};
+  opacity: ${({ enable }) => (enable ? '1' : '0.4')};
 
   svg {
     color: rgb(145, 155, 174);

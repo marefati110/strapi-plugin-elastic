@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 const Wrapper = styled.div`
-  margin-left: 15px;
+  margin-left: 25px;
   margin-top: 15px;
-  width: 80%;
+  width: 76%;
   h2 {
     margin-bottom: 20px;
   }
