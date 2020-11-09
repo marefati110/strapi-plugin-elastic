@@ -14,6 +14,7 @@ const LeftMenu = ({ models, activeModel, setActiveModel }) => {
               label={model.index}
               onClick={() => setActiveModel(model)}
               active={model.index === activeModel?.index}
+              enable={model.enable}
             />
           ))
         : null}

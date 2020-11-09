@@ -2,9 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Wrapper from './Wrapper';
 
-const LeftMenu = ({ label, onClick, active }) => {
+const LeftMenu = ({ label, onClick, active, enable }) => {
   return (
-    <Wrapper onClick={onClick} active={active}>
+    <Wrapper
+      onClick={() => {
+        if (enable) onClick();
+      }}
+      active={active}
+      enable={enable}
+    >
       <svg
         aria-hidden="true"
         focusable="false"
