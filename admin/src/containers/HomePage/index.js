@@ -22,7 +22,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(INITIAL_PAGE);
   const [limit, setLimit] = useState(INITIAL_LIMIT); // it should be string for select
-  const [totalCount, setTotalCount] = useState(20); // it should be string for select
+  const [totalCount, setTotalCount] = useState(10); // it should be string for select
 
   const onChangeParams = ({ target }) => {
     switch (target.name) {
@@ -63,7 +63,7 @@ const HomePage = () => {
       )
         .then((res) => {
           setModelData(res.data);
-          // setTotalCount(res.total || 10);
+          setTotalCount(res.total || 10);
         })
         .finally(() => setLoading(false));
     }

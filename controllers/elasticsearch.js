@@ -24,8 +24,20 @@ module.exports = {
   fetchModels: (ctx) => {
     const { models } = strapi.config.elasticsearch;
 
+    const enabledModels = models.filter((model) => model.enable);
+    const sortedEnabledModels = _.sortBy(enabledModels, (item) => {
+      item.model;
+    });
+
+    const disabledModels = models.filter((model) => !model.enable);
+    const sortedDisabledModels = _.sortBy(disabledModels, (item) => item.model);
+
+    // there is a bug here
+    // models are not sorted
+    const allModels = [...sortedEnabledModels, ...sortedDisabledModels];
+
     const response = _.map(
-      models,
+      allModels,
       _.partialRight(_.pick, [
         'model',
         'plugin',
@@ -43,8 +55,15 @@ module.exports = {
     const data = await strapi.elastic.search({
       index,
       size: _limit || 10,
-      from: _limit * _start || 0,
+      from: _limit * (_start <= 1 ? 0 : _start - 1),
       body: {
+        sort: [
+          {
+            updated_at: {
+              order: 'desc',
+            },
+          },
+        ],
         query: {
           match_all: {},
         },
@@ -57,10 +76,20 @@ module.exports = {
     for (const item of data.body.hits.hits) {
       const source = item['_source'];
       if (!_.isEmpty(source)) {
-        res.push(flatten(source));
+        // remove one to many data
+        const sourceKeys = Object.keys(source);
+
+        for (const key of sourceKeys) {
+          if (_.isArray(source[key])) {
+            source[key] = 'Array';
+          } else if (_.isObject(source[key])) {
+            source[key] = 'Object';
+          }
+        }
+        res.push(source);
       }
     }
 
-    return ctx.send({ data: res });
+    return ctx.send({ data: res, total: data.body.hits.total.value });
   },
 };

@@ -48,15 +48,16 @@ const DataView = ({
 
   const [isMigrating, setIsMigrating] = useState(false);
 
-  const migrate = () => {
+  const migrate = (model) => {
     request(`/strapi-plugin-elastic/migrate-model`, {
       method: 'POST',
+      body: { model },
     })
       .then((res) => {
-        if (res.success) alert('migration was successfull');
-        else alert('migration failed');
+        if (res.success) alert('Migration was successful');
+        else alert('Migration was unsuccessful');
       })
-      .catch(() => alert('migration failed'))
+      .catch(() => alert('Migration was unsuccessful'))
       .finally(() => setIsMigrating(false));
   };
 
@@ -67,7 +68,9 @@ const DataView = ({
         <Button
           color="success"
           isLoading={isMigrating}
-          onClick={migrate}
+          onClick={() => {
+            migrate(activeModel.model);
+          }}
           className="ml-auto"
         >
           migrate

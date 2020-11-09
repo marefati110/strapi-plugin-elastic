@@ -1,25 +1,32 @@
 Arguments: 
-  /usr/bin/node /home/ali/.yarn/bin/yarn.js audit --json
+  /usr/bin/node /usr/bin/yarn audit --json
 
 PATH: 
-  /home/ali/.yarn/bin:/home/ali/.config/yarn/global/node_modules/.bin:/home/ali/.yarn/bin:/home/ali/.config/yarn/global/node_modules/.bin:/home/ali/.local/bin:/home/ali/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/var/lib/snapd/snap/bin
+  /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ali/google-cloud-sdk/bin:/home/ali/.cache/cloud-code/installer/google-cloud-sdk/bin
 
 Yarn version: 
-  1.22.5
+  1.22.10
 
 Node version: 
-  12.18.4
+  14.15.0
 
 Platform: 
   linux x64
 
 Trace: 
-  Error: getaddrinfo ENOTFOUND registry.yarnpkg.com
-      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:66:26)
+  Error: connect ENETUNREACH 2606:4700::6810:1623:443 - Local (:::0)
+      at internalConnect (net.js:921:16)
+      at defaultTriggerAsyncIdScope (internal/async_hooks.js:429:12)
+      at emitLookup (net.js:1064:9)
+      at /usr/lib/node_modules/yarn/lib/cli.js:107150:29
+      at /usr/lib/node_modules/yarn/lib/cli.js:106996:25
+      at RawTask.module.exports.RawTask.call (/usr/lib/node_modules/yarn/lib/cli.js:83614:19)
+      at flush (/usr/lib/node_modules/yarn/lib/cli.js:83696:29)
+      at processTicksAndRejections (internal/process/task_queues.js:75:11)
 
 npm manifest: 
   {
-    "name": "strapi-plugin-elasticsearch",
+    "name": "strapi-plugin-elastic",
     "version": "1.1.0",
     "description": "this package help you easily send your data to elasticsearch.",
     "strapi": {
@@ -29,8 +36,9 @@ npm manifest:
     },
     "dependencies": {
       "@elastic/elasticsearch": "^7.8.0",
-      "os-utils": "^0.0.14",
-      "moment": "^2.27.0"
+      "moment": "^2.27.0",
+      "axios": "^0.20.0",
+      "flat": "^5.0.2"
     },
     "author": {
       "name": "Ali Marefati",
