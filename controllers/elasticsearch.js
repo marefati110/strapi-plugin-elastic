@@ -51,24 +51,29 @@ module.exports = {
   },
   fetchModel: async (ctx) => {
     const { index, _start, _limit } = ctx.query;
+    let data;
 
-    const data = await strapi.elastic.search({
-      index,
-      size: _limit || 10,
-      from: _limit * (_start <= 1 ? 0 : _start - 1),
-      body: {
-        sort: [
-          {
-            updated_at: {
-              order: 'desc',
+    try {
+      data = await strapi.elastic.search({
+        index,
+        size: _limit || 10,
+        from: _limit * (_start - 1),
+        body: {
+          sort: [
+            {
+              updated_at: {
+                order: 'desc',
+              },
             },
+          ],
+          query: {
+            match_all: {},
           },
-        ],
-        query: {
-          match_all: {},
         },
-      },
-    });
+      });
+    } catch (e) {
+      return ctx.send({ data: null, total: 0 });
+    }
 
     if (data.statusCode !== 200) return ctx.badRequest();
 
@@ -89,7 +94,7 @@ module.exports = {
         res.push(source);
       }
     }
-
+    
     return ctx.send({ data: res, total: data.body.hits.total.value });
   },
 };

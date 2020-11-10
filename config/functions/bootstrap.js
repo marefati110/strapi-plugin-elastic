@@ -46,10 +46,10 @@ module.exports = async () => {
     createOrUpdate('strapi_elastic_config', { id: 1, data: { value: 1 } });
 
     // create index for enable models
-    await checkEnableModels();
+    // await checkEnableModels();
 
     // check new release from github
-    checkNewVersion();
+    // checkNewVersion();
 
     // bootstrap message
     strapi.elastic.log.info('The elastic plugin is running ...', {

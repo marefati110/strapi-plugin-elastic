@@ -48,6 +48,7 @@ const migrateModel = async (model, params = {}) => {
         index: {
           _index: targetModel.index,
           _id: doc[targetModel.pk || 'id'],
+          _type: '_doc',
         },
       },
       doc,

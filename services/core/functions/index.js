@@ -1,3 +1,4 @@
+const _ = require('lodash');
 /* eslint-disable no-empty */
 module.exports = {
   // need refactor
@@ -56,17 +57,25 @@ module.exports = {
     if (!id) {
       return strapi.elastic.index({
         index: targetModel.index,
+        type: '_doc',
         body: data,
       });
     } else if (id) {
-      return strapi.elastic.update({
-        id,
-        index: targetModel.index,
-        body: {
-          doc: data,
-          doc_as_upsert: true,
+      if (!_.isArray(data)) data = [data];
+      // console.log('data', JSON.stringify(data));
+
+      const body = await data.flatMap((doc) => [
+        {
+          index: {
+            _index: targetModel.index,
+            _id: doc[targetModel.pk || 'id'],
+          },
         },
-      });
+        doc,
+      ]);
+      const aaa = await strapi.elastic.bulk({ body });
+      // console.log('aaa', JSON.stringify(aaa));
+      return aaa;
     }
   },
   migrateById: async (model, { id, id_in, relations, conditions }) => {
