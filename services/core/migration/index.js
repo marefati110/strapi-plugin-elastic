@@ -32,13 +32,12 @@ const migrateModel = async (model, params = {}) => {
           ...targetModel.conditions,
           ...params.conditions,
         },
-        [...targetModel.relations]
+        [...targetModel.relations, 'created_by', 'updated_by']
       );
 
     if (result.length === 0) {
       return;
     }
-
     //
     const end_sql = Date.now();
     //
@@ -56,13 +55,13 @@ const migrateModel = async (model, params = {}) => {
     //
     const start_elastic = Date.now();
     //
+    strapi.log.debug(`Sending ${targetModel.model} model to elasticsearch...`);
     try {
-      strapi.log.debug(
-        `Sending ${targetModel.model} model to elasticsearch...`
-      );
-      await strapi.elastic.bulk({ refresh: true, body });
+      const elastic = await strapi.elastic.bulk({ refresh: true, body });
+      // console.log(elastic);
     } catch (e) {
       strapi.log.error(e);
+      return;
     }
     //
     const end_elastic = Date.now();

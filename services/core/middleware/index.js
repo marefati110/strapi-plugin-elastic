@@ -86,6 +86,8 @@ module.exports = {
           .query(targetModel.model, targetModel.plugin)
           .findOne({ id, ...targetModel.conditions }, [
             ...targetModel.relations,
+            'created_by',
+            'updated_by',
           ]);
       }
       /*

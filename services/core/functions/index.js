@@ -62,20 +62,25 @@ module.exports = {
       });
     } else if (id) {
       if (!_.isArray(data)) data = [data];
-      // console.log('data', JSON.stringify(data));
 
       const body = await data.flatMap((doc) => [
         {
           index: {
             _index: targetModel.index,
             _id: doc[targetModel.pk || 'id'],
+            _type: '_doc',
           },
         },
         doc,
       ]);
-      const aaa = await strapi.elastic.bulk({ body });
-      // console.log('aaa', JSON.stringify(aaa));
-      return aaa;
+      const elastic = await strapi.elastic.bulk({ body });
+
+      const map = await strapi.elastic.indices.getMapping({
+        index: targetModel.index,
+      });
+      // console.log('map', JSON.stringify(map));
+      // console.log(JSON.stringify(elastic));
+      return elastic;
     }
   },
   migrateById: async (model, { id, id_in, relations, conditions }) => {
@@ -98,7 +103,11 @@ module.exports = {
 
     const body = await data.flatMap((doc) => [
       {
-        index: { _index: targetModel.index, _id: doc[targetModel.pk || 'id'] },
+        index: {
+          _index: targetModel.index,
+          _id: doc[targetModel.pk || 'id'],
+          _type: '_doc',
+        },
       },
       doc,
     ]);
