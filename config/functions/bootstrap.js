@@ -21,9 +21,7 @@ module.exports = async () => {
     // combine elasticsearch package with strapi object
     strapi.elastic = client;
 
-    /*
-     * combine custom functions with strapi ob
-     */
+    // combine custom functions with strapi object
 
     strapi.elastic.findOne = findOne;
 
@@ -39,11 +37,10 @@ module.exports = async () => {
 
     strapi.elastic.migrateById = migrateById;
 
-    // strapi.elasticsearch logs
     strapi.elastic.log = log;
 
     // create  `strapi_elasticsearch` index
-    createOrUpdate('strapi_elastic_config', { id: 1, data: { value: 1 } });
+    // createOrUpdate('strapi_elastic_config', { id: 1, data: { value: 1 } });
 
     // create index for enable models
     // await checkEnableModels();
@@ -55,14 +52,5 @@ module.exports = async () => {
     strapi.elastic.log.info('The elastic plugin is running ...', {
       setting: { saveToElastic: false },
     });
-  } else {
-    strapi.log.info(
-      `
-           ________________Welcome to Elasticsearch plugin_____________________
-          |                                                                    |
-          |      The plugin automatically generate config file in /config      |
-          |______________________________Enjoy_________________________________|
-      `
-    );
   }
 };
