@@ -14,8 +14,15 @@ Platform:
   linux x64
 
 Trace: 
-  Error: getaddrinfo EAI_AGAIN registry.yarnpkg.com
-      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:67:26)
+  Error: connect ENETUNREACH 2606:4700::6810:1923:443 - Local (:::0)
+      at internalConnect (net.js:921:16)
+      at defaultTriggerAsyncIdScope (internal/async_hooks.js:429:12)
+      at emitLookup (net.js:1064:9)
+      at /usr/lib/node_modules/yarn/lib/cli.js:107150:29
+      at /usr/lib/node_modules/yarn/lib/cli.js:106996:25
+      at RawTask.module.exports.RawTask.call (/usr/lib/node_modules/yarn/lib/cli.js:83614:19)
+      at flush (/usr/lib/node_modules/yarn/lib/cli.js:83696:29)
+      at processTicksAndRejections (internal/process/task_queues.js:75:11)
 
 npm manifest: 
   {

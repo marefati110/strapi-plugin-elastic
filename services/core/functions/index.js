@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const { compareDataWithMap, generateMappings } = require('../helper');
 /* eslint-disable no-empty */
 module.exports = {
   // need refactor
@@ -54,32 +55,47 @@ module.exports = {
 
     if (!targetModel || !data) return null;
 
-    if (!id) {
+    const indexConfig =
+      strapi.config['elasticsearch.index.config'][targetModel.index];
+    if (
+      indexConfig &&
+      indexConfig.mappings &&
+      indexConfig.mappings.properties
+    ) {
+      const res = await compareDataWithMap({
+        docs: data,
+        properties: indexConfig.mappings.properties,
+      });
+
+      data = res.result || data;
+
+      // if (res.newMappings) {
+      //   generateMappings({ targetModels: targetModel });
+      // }
+    }
+
+    if (!id && data) {
+      //
       return strapi.elastic.index({
         index: targetModel.index,
-        type: '_doc',
         body: data,
       });
-    } else if (id) {
-      if (!_.isArray(data)) data = [data];
-
-      const body = await data.flatMap((doc) => [
-        {
-          index: {
-            _index: targetModel.index,
-            _id: doc[targetModel.pk || 'id'],
-            _type: '_doc',
-          },
-        },
-        doc,
-      ]);
-      const elastic = await strapi.elastic.bulk({ body });
-
-      const map = await strapi.elastic.indices.getMapping({
+      //
+    } else if (id && data) {
+      //
+      const elastic = await strapi.elastic.update({
         index: targetModel.index,
+        id: data[targetModel.pk || 'id'],
+        body: {
+          doc: data,
+          doc_as_upsert: true,
+        },
       });
-      // console.log('map', JSON.stringify(map));
-      // console.log(JSON.stringify(elastic));
+
+      if (!indexConfig) {
+        generateMappings({ targetModels: targetModel });
+      }
+
       return elastic;
     }
   },

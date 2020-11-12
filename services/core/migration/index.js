@@ -1,3 +1,7 @@
+const _ = require('lodash');
+
+const { compareDataWithMap, generateMappings } = require('../helper');
+
 const migrateModel = async (model, params = {}) => {
   // specific condition
   params.conditions = params.conditions || {};
@@ -18,30 +22,44 @@ const migrateModel = async (model, params = {}) => {
   let index_length = await strapi.services[targetModel.model].count();
   index_length = parseInt(index_length / setting.importLimit);
 
+  //
+  const indexConfig =
+    strapi.config['elasticsearch.index.config'][targetModel.index];
+
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const start_sql = Date.now();
 
     strapi.log.debug(`Getting ${targetModel.model} model data from database`);
-    const result = await strapi
-      .query(targetModel.model, targetModel.plugin)
-      .find(
-        {
-          _limit: setting.importLimit,
-          _start: setting.importLimit * start,
-          ...targetModel.conditions,
-          ...params.conditions,
-        },
-        [...targetModel.relations, 'created_by', 'updated_by']
-      );
+    let result = await strapi.query(targetModel.model, targetModel.plugin).find(
+      {
+        _limit: setting.importLimit,
+        _start: setting.importLimit * start,
+        ...targetModel.conditions,
+        ...params.conditions,
+      },
+      [...targetModel.relations]
+    );
 
-    if (result.length === 0) {
-      return;
+    if (result.length === 0) break;
+
+    if (
+      indexConfig &&
+      indexConfig.mappings &&
+      indexConfig.mappings.properties
+    ) {
+      const res = compareDataWithMap({
+        docs: result,
+        properties: indexConfig.mappings.properties,
+      });
+
+      result = res.result || result;
+      //
     }
+
     //
     const end_sql = Date.now();
     //
-
     const body = await result.flatMap((doc) => [
       {
         index: {
@@ -54,7 +72,7 @@ const migrateModel = async (model, params = {}) => {
     ]);
     //
     const start_elastic = Date.now();
-    //
+
     strapi.log.debug(`Sending ${targetModel.model} model to elasticsearch...`);
     try {
       const elastic = await strapi.elastic.bulk({ refresh: true, body });
@@ -78,6 +96,10 @@ const migrateModel = async (model, params = {}) => {
       )}s`
     );
     //
+  }
+
+  if (!indexConfig) {
+    generateMappings({ targetModels: targetModel });
   }
 };
 const migrateModels = async (params = {}) => {
