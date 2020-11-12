@@ -62,5 +62,5 @@ module.exports = ({ env }) => ({
     index_postfix: '',
     removeExistIndexForMigration: false,
   },
-  models: ${JSON.stringify(modelsConfig)}
+  models: ${JSON.stringify(modelsConfig, null, 4)}
 });`;

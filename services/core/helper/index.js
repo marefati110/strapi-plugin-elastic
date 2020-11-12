@@ -142,7 +142,7 @@ function compareDataWithMap({ properties, docs }) {
 }
 
 const elasticsearchIndexConfigTemplate = (config) => `
-module.exports = () => (${JSON.stringify(config)});
+module.exports = () => (${JSON.stringify(config, null, 4)});
 `;
 
 module.exports = {
