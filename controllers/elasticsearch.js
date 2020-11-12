@@ -1,7 +1,6 @@
 const _ = require('lodash');
-const flatten = require('flat');
 const {
-  migration: { migrateModel, migrateModels },
+  helper: { generateIndexConfig },
 } = require('../services');
 
 module.exports = {
@@ -10,16 +9,13 @@ module.exports = {
       message: 'on progress it can take a few minuets',
     });
 
-    migrateModels();
+    strapi.elastic.migrateModel.migrateModels();
   },
   migrateModel: async (ctx) => {
     const { model } = ctx.request.body;
-    try {
-      await strapi.elastic.migrateModel(model);
-      return ctx.send({ success: true });
-    } catch (e) {
-      return ctx.throw(500);
-    }
+
+    await strapi.elastic.migrateModel(model);
+    return ctx.send({ success: true });
   },
   fetchModels: (ctx) => {
     const { models } = strapi.config.elasticsearch;
@@ -94,7 +90,15 @@ module.exports = {
         res.push(source);
       }
     }
-    
+
     return ctx.send({ data: res, total: data.body.hits.total.value });
+  },
+  generateIndexConfig: async (ctx) => {
+    const data = ctx.request.body;
+    if (!data) return ctx.badRequest();
+
+    const res = await generateIndexConfig({ data });
+
+    return ctx.send(res);
   },
 };

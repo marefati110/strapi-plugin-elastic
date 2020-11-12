@@ -112,7 +112,7 @@ function compareDataWithMap({ properties, docs }) {
           // other types
         } else {
           //
-          res[docKey] = null;
+          // res[docKey] = null;
           dockKeyUsed.push(docKey);
           //
         }
@@ -205,5 +205,45 @@ module.exports = {
         if (err) throw err;
       }
     );
+  },
+  removeIndexConfig: async ({ targetModels }) => {
+    if (!_.isArray(targetModels)) targetModels = [targetModels];
+    const configFilePath = path.resolve(__dirname, '../../../../../config');
+
+    const indexConfig = strapi.config['elasticsearch.index.config'];
+
+    for (const targetModel of targetModels) {
+      delete indexConfig[targetModel.index][targetModel.index];
+    }
+
+    const config = elasticsearchIndexConfigTemplate(indexConfig);
+
+    fs.writeFile(
+      configFilePath + '/elasticsearch.index.config.js',
+      config,
+      (err) => {
+        if (err) throw err;
+      }
+    );
+  },
+  generateIndexConfig: async ({ data }) => {
+    await strapi.elastic.index({
+      index: 'strapi_elastic_lab',
+      body: data,
+    });
+
+    let map = await strapi.elastic.indices.getMapping({
+      index: 'strapi_elastic_lab',
+    });
+
+    await strapi.elastic.indices.delete({
+      index: 'strapi_elastic_lab',
+    });
+
+    map = map.body['strapi_elastic_lab'];
+    const res = {};
+    res.INDEX_NAME = map;
+
+    return res;
   },
 };

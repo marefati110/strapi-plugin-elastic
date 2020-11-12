@@ -1,6 +1,10 @@
 const _ = require('lodash');
 
-const { compareDataWithMap, generateMappings } = require('../helper');
+const {
+  compareDataWithMap,
+  generateMappings,
+  removeIndexConfig,
+} = require('../helper');
 
 const migrateModel = async (model, params = {}) => {
   // specific condition
@@ -9,12 +13,30 @@ const migrateModel = async (model, params = {}) => {
   const { models, setting } = strapi.config.elasticsearch;
   const targetModel = models.find((item) => item.model === model);
 
+  const indexConfig =
+    strapi.config['elasticsearch.index.config'][targetModel.index];
+
   if (
     !targetModel ||
     targetModel.enable === false ||
     targetModel.migration === false
   )
     return null;
+
+  if (!targetModel.removeExistIndexForMigration) {
+    try {
+      await strapi.elastic.indices.delete({
+        index: targetModel.index,
+      });
+    } catch (e) {}
+  }
+
+  if (indexConfig) {
+    await strapi.elastic.indices.create({
+      index: targetModel.index,
+      body: indexConfig,
+    });
+  }
 
   let start = 0;
   strapi.elastic.log.debug(`Importing ${targetModel.model} to elasticsearch`);
@@ -23,8 +45,6 @@ const migrateModel = async (model, params = {}) => {
   index_length = parseInt(index_length / setting.importLimit);
 
   //
-  const indexConfig =
-    strapi.config['elasticsearch.index.config'][targetModel.index];
 
   // eslint-disable-next-line no-constant-condition
   while (true) {

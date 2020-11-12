@@ -17,6 +17,14 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/generate-mappings",
+      "handler": "elasticsearch.generateIndexConfig",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/models",
       "handler": "elasticsearch.fetchModels",
