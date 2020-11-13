@@ -9,8 +9,8 @@ module.exports = {
   findOne,
   find,
   destroy,
+  elasticsearchManager,
   helper,
   functions,
-  elasticsearchManager,
   migration,
 };

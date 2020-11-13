@@ -23,19 +23,19 @@ const migrateModel = async (model, params = {}) => {
   )
     return null;
 
-  if (!targetModel.removeExistIndexForMigration) {
+  if (targetModel.removeExistIndexForMigration === true) {
     try {
       await strapi.elastic.indices.delete({
         index: targetModel.index,
       });
     } catch (e) {}
-  }
 
-  if (indexConfig) {
-    await strapi.elastic.indices.create({
-      index: targetModel.index,
-      body: indexConfig,
-    });
+    if (indexConfig) {
+      await strapi.elastic.indices.create({
+        index: targetModel.index,
+        body: indexConfig,
+      });
+    }
   }
 
   let start = 0;
@@ -60,7 +60,6 @@ const migrateModel = async (model, params = {}) => {
       },
       [...targetModel.relations]
     );
-
     if (result.length === 0) break;
 
     if (
@@ -96,7 +95,6 @@ const migrateModel = async (model, params = {}) => {
     strapi.log.debug(`Sending ${targetModel.model} model to elasticsearch...`);
     try {
       const elastic = await strapi.elastic.bulk({ refresh: true, body });
-      // console.log(elastic);
     } catch (e) {
       strapi.log.error(e);
       return;
@@ -118,7 +116,7 @@ const migrateModel = async (model, params = {}) => {
     //
   }
 
-  if (!indexConfig) {
+  if (!indexConfig && params.generateConfig) {
     generateMappings({ targetModels: targetModel });
   }
 };
@@ -144,12 +142,12 @@ const migrateModels = async (params = {}) => {
 
     // call migrateModel function for each model
     for (const item of targetModels) {
-      await migrateModel(item.model, params.conditions);
+      await migrateModel(item.model, params);
     }
   } else {
     // call migrateModel function for each model
     for (const item of models) {
-      await migrateModel(item.model, params.conditions);
+      await migrateModel(item.model, params);
     }
   }
 

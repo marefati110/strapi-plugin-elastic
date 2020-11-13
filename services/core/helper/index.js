@@ -141,11 +141,66 @@ function compareDataWithMap({ properties, docs }) {
   }
 }
 
+const modelConfigTemplate = (model) => ({
+  model,
+  index: model,
+  plugin: null,
+  enable: false,
+  migration: false,
+  pk: 'id',
+  relations: [],
+  conditions: {},
+  fillByResponse: true,
+  supportAdminPanel: true,
+  urls: [],
+});
+
+const elasticsearchConfigTemplate = (modelsConfig) => `
+module.exports = ({ env }) => ({
+  connection: {
+    // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/auth-reference.html
+    node: env('ELASTICSEARCH_HOST', 'http://127.0.0.1:9200'),
+  },
+  setting: {
+    validStatus: [200, 201],
+    validMethod: ['PUT', 'POST', 'DELETE'],
+    importLimit: 3000,
+    index_postfix: '',
+    index_postfix: '',
+    removeExistIndexForMigration: false,
+  },
+  models: ${JSON.stringify(modelsConfig, null, 4)}
+});`;
+
 const elasticsearchIndexConfigTemplate = (config) => `
 module.exports = () => (${JSON.stringify(config, null, 4)});
 `;
 
 module.exports = {
+  generateMainConfig: async () => {
+    const rootPath = path.resolve(__dirname, '../../../../../');
+    const configPath = rootPath + '/elasticsearch/elasticsearch.js';
+
+    fs.mkdirSync(rootPath + '/elasticsearch', { recursive: true });
+
+    const existConfigFile = fs.existsSync(configPath);
+
+    if (!existConfigFile) {
+      const models = fs.readdirSync(rootPath + '/api');
+
+      const modelsConfig = [];
+
+      models.map((model) => {
+        const config = modelConfigTemplate(model);
+        modelsConfig.push(config);
+      });
+
+      const elasticsearchConfig = elasticsearchConfigTemplate(modelsConfig);
+      fs.writeFile(configPath, elasticsearchConfig, (err) => {
+        if (err) throw err;
+      });
+    }
+  },
   checkEnableModels: async () => {
     const { models } = strapi.config.elasticsearch;
 
@@ -180,7 +235,6 @@ module.exports = {
       );
     }
   },
-  compareDataWithMap,
   generateMappings: async ({ targetModels }) => {
     if (!_.isArray(targetModels)) targetModels = [targetModels];
 
@@ -246,4 +300,5 @@ module.exports = {
 
     return res;
   },
+  compareDataWithMap,
 };

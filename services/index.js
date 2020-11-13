@@ -9,7 +9,6 @@ const {
   functions,
 } = require('./core');
 
-const generateConfig = require('./generateConfig');
 const log = require('./log');
 
 module.exports = {
@@ -22,5 +21,4 @@ module.exports = {
   log,
   helper,
   functions,
-  generateConfig,
 };
