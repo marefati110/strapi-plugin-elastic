@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const {
-  helper: { generateIndexConfig },
+  helper: { generateMappings },
 } = require('../services');
 
 module.exports = {
@@ -95,10 +95,57 @@ module.exports = {
   },
   generateIndexConfig: async (ctx) => {
     const data = ctx.request.body;
-    if (!data) return ctx.badRequest();
+    const { model } = ctx.params;
 
-    const res = await generateIndexConfig({ data });
+    if (!data || !model) return ctx.badRequest();
 
-    return ctx.send(res);
+    await strapi.elastic.index({
+      index: 'strapi_elastic_lab',
+      body: data,
+    });
+
+    const map = await strapi.elastic.indices.getMapping({
+      index: 'strapi_elastic_lab',
+    });
+
+    await strapi.elastic.indices.delete({
+      index: 'strapi_elastic_lab',
+    });
+
+    const { models } = strapi.config.elasticsearch;
+    const targetModel = models.find((item) => item.model === model);
+
+    await generateMappings({
+      data: map.body['strapi_elastic_lab'],
+      targetModels: targetModel,
+    });
+
+    return ctx.send({ success: true });
   },
+  createIndex: async (ctx) => {
+    const { model } = ctx.request.body;
+
+    const targetModel = models.find((item) => item.model === model);
+
+    const indexConfig = strapi.elastic.indicesMapping[targetModel.model];
+
+    try {
+      await strapi.elastic.indices.delete({
+        index: targetModel.index,
+      });
+
+      await strapi.elastic.indices.create({
+        index: targetModel.index,
+        body: indexConfig || null,
+      });
+      //
+      return ctx.send({ success: true });
+      //
+    } catch (e) {
+      //
+      return ctx.badRequest({ success: false });
+      //
+    }
+  },
+  deleteIndex: async (ctx) => {},
 };

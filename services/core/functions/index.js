@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { compareDataWithMap, generateMappings } = require('../helper');
+const { compareDataWithMap } = require('../helper');
 /* eslint-disable no-empty */
 module.exports = {
   // need refactor
@@ -55,8 +55,8 @@ module.exports = {
 
     if (!targetModel || !data) return null;
 
-    const indexConfig =
-      strapi.config['elasticsearch.index.config'][targetModel.index];
+    const indexConfig = strapi.elastic.indicesMapping[targetModel.model];
+
     if (
       indexConfig &&
       indexConfig.mappings &&
@@ -66,12 +66,7 @@ module.exports = {
         docs: data,
         properties: indexConfig.mappings.properties,
       });
-
       data = res.result || data;
-
-      // if (res.newMappings) {
-      //   generateMappings({ targetModels: targetModel });
-      // }
     }
 
     if (!id && data) {
@@ -91,10 +86,6 @@ module.exports = {
           doc_as_upsert: true,
         },
       });
-
-      if (!indexConfig) {
-        generateMappings({ targetModels: targetModel });
-      }
 
       return elastic;
     }

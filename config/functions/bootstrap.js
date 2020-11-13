@@ -1,7 +1,12 @@
 const { Client } = require('@elastic/elasticsearch');
 
 const {
-  helper: { checkEnableModels, checkNewVersion, generateMainConfig },
+  helper: {
+    checkEnableModels,
+    checkNewVersion,
+    generateMainConfig,
+    initialStrapi,
+  },
 } = require('../../services');
 const {
   log,
@@ -10,7 +15,10 @@ const {
 } = require('../../services');
 
 module.exports = async () => {
-  await generateMainConfig();
+  //
+  generateMainConfig();
+
+  //
   if (strapi.config.elasticsearch) {
     const { connection } = strapi.config.elasticsearch;
 
@@ -19,6 +27,8 @@ module.exports = async () => {
 
     // combine elasticsearch package with strapi object
     strapi.elastic = client;
+
+    initialStrapi();
 
     // combine custom functions with strapi object
 

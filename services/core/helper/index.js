@@ -172,16 +172,15 @@ module.exports = ({ env }) => ({
   models: ${JSON.stringify(modelsConfig, null, 4)}
 });`;
 
-const elasticsearchIndexConfigTemplate = (config) => `
-module.exports = () => (${JSON.stringify(config, null, 4)});
-`;
+
+
 
 module.exports = {
-  generateMainConfig: async () => {
+  generateMainConfig: () => {
     const rootPath = path.resolve(__dirname, '../../../../../');
-    const configPath = rootPath + '/elasticsearch/elasticsearch.js';
+    const configPath = rootPath + '/config/elasticsearch.js';
 
-    fs.mkdirSync(rootPath + '/elasticsearch', { recursive: true });
+    fs.mkdirSync(rootPath + '/exports/elasticsearch', { recursive: true });
 
     const existConfigFile = fs.existsSync(configPath);
 
@@ -199,6 +198,34 @@ module.exports = {
       fs.writeFile(configPath, elasticsearchConfig, (err) => {
         if (err) throw err;
       });
+    }
+  },
+  generateMappings: async ({ targetModels, data }) => {
+    if (!_.isArray(targetModels)) targetModels = [targetModels];
+
+    const rootPath = path.resolve(__dirname, '../../../../../');
+    const exportPath = `${rootPath}/exports/elasticsearch`;
+
+    for (const targetModel of targetModels) {
+      let map = {};
+
+      // get mapping;
+      if (!data) {
+        map = await strapi.elastic.indices.getMapping({
+          index: targetModel.index,
+        });
+      }
+
+      if ((map && map.body) || data) {
+        fs.writeFile(
+          `${exportPath}/${targetModel.model}.index.json`,
+          JSON.stringify(map.body || data, null, 2),
+          (err) => {
+            if (err) throw err;
+          }
+        );
+      }
+      //
     }
   },
   checkEnableModels: async () => {
@@ -235,70 +262,24 @@ module.exports = {
       );
     }
   },
-  generateMappings: async ({ targetModels }) => {
-    if (!_.isArray(targetModels)) targetModels = [targetModels];
+  initialStrapi: () => {
+    const indicesMapping = {};
+    const indexFilePattern = /([a-zA-z0-9-_]*)\.index\.json/;
 
-    const configFilePath = path.resolve(__dirname, '../../../../../config');
+    const rootPath = path.resolve(__dirname, '../../../../../');
+    const exportPath = `${rootPath}/exports/elasticsearch`;
 
-    const indexConfig = strapi.config['elasticsearch.index.config'] || {};
+    const indicesMapConfigFile = fs.readdirSync(exportPath);
 
-    for (const targetModel of targetModels) {
-      const map = await strapi.elastic.indices.getMapping({
-        index: targetModel.index,
-      });
-
-      indexConfig[targetModel.index] = map.body[targetModel.index];
-    }
-
-    const config = elasticsearchIndexConfigTemplate(indexConfig);
-
-    fs.writeFile(
-      configFilePath + '/elasticsearch.index.config.js',
-      config,
-      (err) => {
-        if (err) throw err;
+    indicesMapConfigFile.forEach((index) => {
+      if (indexFilePattern.test(index)) {
+        const map = require(`${exportPath}/${index}`);
+        const [, model] = index.match(indexFilePattern);
+        indicesMapping[model] = map;
       }
-    );
-  },
-  removeIndexConfig: async ({ targetModels }) => {
-    if (!_.isArray(targetModels)) targetModels = [targetModels];
-    const configFilePath = path.resolve(__dirname, '../../../../../config');
-
-    const indexConfig = strapi.config['elasticsearch.index.config'];
-
-    for (const targetModel of targetModels) {
-      delete indexConfig[targetModel.index][targetModel.index];
-    }
-
-    const config = elasticsearchIndexConfigTemplate(indexConfig);
-
-    fs.writeFile(
-      configFilePath + '/elasticsearch.index.config.js',
-      config,
-      (err) => {
-        if (err) throw err;
-      }
-    );
-  },
-  generateIndexConfig: async ({ data }) => {
-    await strapi.elastic.index({
-      index: 'strapi_elastic_lab',
-      body: data,
     });
 
-    let map = await strapi.elastic.indices.getMapping({
-      index: 'strapi_elastic_lab',
-    });
-
-    await strapi.elastic.indices.delete({
-      index: 'strapi_elastic_lab',
-    });
-
-    map = map.body['strapi_elastic_lab'];
-    const res = {};
-    res.INDEX_NAME = map;
-
-    return res;
+    strapi.elastic.indicesMapping = indicesMapping;
   },
   compareDataWithMap,
 };
