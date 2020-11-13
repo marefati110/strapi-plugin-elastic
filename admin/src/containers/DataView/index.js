@@ -47,8 +47,11 @@ const DataView = ({
   );
 
   const [isMigrating, setIsMigrating] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const migrate = (model) => {
+    setIsMigrating(true);
     request(`/strapi-plugin-elastic/migrate-model`, {
       method: 'POST',
       body: { model },
@@ -59,6 +62,34 @@ const DataView = ({
       })
       .catch(() => alert('Migration was unsuccessful'))
       .finally(() => setIsMigrating(false));
+  };
+
+  const deleteIndex = (model) => {
+    setIsDeleting(true);
+    request(`/strapi-plugin-elastic/delete-index`, {
+      method: 'POST',
+      body: { model },
+    })
+      .then((res) => {
+        if (res.success) alert(`${model} deleted`);
+        else alert(`cannot deleted ${model}`);
+      })
+      .catch(() => alert(`cannot deleted ${model}`))
+      .finally(() => setIsDeleting(false));
+  };
+
+  const createIndex = (model) => {
+    setIsCreating(true);
+    request(`/strapi-plugin-elastic/create-index`, {
+      method: 'POST',
+      body: { model },
+    })
+      .then((res) => {
+        if (res.success) alert(`${model} created`);
+        else alert(`cannot create ${model}`);
+      })
+      .catch(() => alert(`cannot create ${model}`))
+      .finally(() => setIsCreating(false));
   };
 
   return (
@@ -74,6 +105,26 @@ const DataView = ({
           className="ml-auto"
         >
           migrate
+        </Button>
+        <Button
+          color="primary"
+          isLoading={isCreating}
+          onClick={() => {
+            createIndex(activeModel.model);
+          }}
+          className="ml-auto"
+        >
+          create
+        </Button>
+        <Button
+          color="delete"
+          isLoading={isDeleting}
+          onClick={() => {
+            deleteIndex(activeModel.model);
+          }}
+          className="ml-auto"
+        >
+          delete
         </Button>
       </div>
       <hr />

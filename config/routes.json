@@ -25,6 +25,22 @@
       }
     },
     {
+      "method": "POST",
+      "path": "/create-index",
+      "handler": "elasticsearch.createIndex",
+      "config": {
+        "policies": []
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/delete-index",
+      "handler": "elasticsearch.deleteIndex",
+      "config": {
+        "policies": []
+      }
+    },
+    {
       "method": "GET",
       "path": "/models",
       "handler": "elasticsearch.fetchModels",

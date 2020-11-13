@@ -125,27 +125,35 @@ module.exports = {
   createIndex: async (ctx) => {
     const { model } = ctx.request.body;
 
+    const { models } = strapi.config.elasticsearch;
     const targetModel = models.find((item) => item.model === model);
 
     const indexConfig = strapi.elastic.indicesMapping[targetModel.model];
 
     try {
-      await strapi.elastic.indices.delete({
-        index: targetModel.index,
-      });
-
       await strapi.elastic.indices.create({
         index: targetModel.index,
         body: indexConfig || null,
       });
-      //
+
       return ctx.send({ success: true });
-      //
     } catch (e) {
-      //
-      return ctx.badRequest({ success: false });
-      //
+      return ctx.throw(500);
     }
   },
-  deleteIndex: async (ctx) => {},
+  deleteIndex: async (ctx) => {
+    const { model } = ctx.request.body;
+
+    const { models } = strapi.config.elasticsearch;
+    const targetModel = models.find((item) => item.model === model);
+
+    try {
+      await strapi.elastic.indices.delete({
+        index: targetModel.index,
+      });
+      return ctx.send({ success: true });
+    } catch (e) {
+      return ctx.throw(500);
+    }
+  },
 };
