@@ -130,11 +130,16 @@ module.exports = {
 
     const indexConfig = strapi.elastic.indicesMapping[targetModel.model];
 
+    const options = {
+      index: targetModel.index,
+    };
+
+    if (indexConfig) {
+      options.body = indexConfig;
+    }
+
     try {
-      await strapi.elastic.indices.create({
-        index: targetModel.index,
-        body: indexConfig || null,
-      });
+      await strapi.elastic.indices.create(options);
 
       return ctx.send({ success: true });
     } catch (e) {
