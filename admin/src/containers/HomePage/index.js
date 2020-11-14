@@ -90,6 +90,7 @@ const HomePage = () => {
           limit={limit}
           onChangeParams={onChangeParams}
           totalCount={totalCount}
+          isMigrateActive={activeModel?.migration}
         />
       </div>
     </div>
