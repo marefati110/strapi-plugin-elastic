@@ -1,5 +1,6 @@
 import React, { memo, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 import { GlobalPagination, request } from 'strapi-helper-plugin';
 import { isObject } from 'lodash';
 import { Table, Button, Select } from '@buffetjs/core';
@@ -18,6 +19,7 @@ const DataView = ({
   onChangeParams,
   isMigrateActive,
 }) => {
+  const history = useHistory();
   const tableHeaders = useMemo(
     () =>
       data && data.length
@@ -139,7 +141,19 @@ const DataView = ({
         ))
       ) : (
         <>
-          <Table headers={tableHeaders} rows={tableData} />
+          <Table
+            headers={tableHeaders}
+            rows={tableData}
+            onClickRow={(e, data) =>
+              history.push(
+                `/plugins/content-manager/collectionType/${
+                  activeModel?.plugin
+                    ? `plugins::${activeModel?.plugin}.${activeModel?.model}`
+                    : `application::${activeModel?.model}.${activeModel?.model}`
+                }/${data.id}`
+              )
+            }
+          />
           <div className="mt-5 row align-items-center px-2">
             <Select
               name="params._limit"
