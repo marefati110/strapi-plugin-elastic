@@ -112,7 +112,7 @@ const DataView = ({
           onClick={() => {
             createIndex(activeModel.model);
           }}
-          className="ml-auto"
+          className="ml-2"
         >
           create
         </Button>
@@ -122,7 +122,7 @@ const DataView = ({
           onClick={() => {
             deleteIndex(activeModel.model);
           }}
-          className="ml-auto"
+          className="ml-2"
         >
           delete
         </Button>

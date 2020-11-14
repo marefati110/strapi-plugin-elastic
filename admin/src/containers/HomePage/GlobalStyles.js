@@ -7,5 +7,8 @@ const GlobalStyle = createGlobalStyle`
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  button {
+    min-width: unset !important;
+  }
 `;
 export default GlobalStyle;
