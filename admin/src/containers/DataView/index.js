@@ -146,7 +146,7 @@ const DataView = ({
             rows={tableData}
             onClickRow={(e, data) =>
               history.push(
-                `/admin/plugins/content-manager/collectionType/${
+                `/plugins/content-manager/collectionType/${
                   activeModel?.plugin
                     ? `plugins::${activeModel?.plugin}.${activeModel?.model}`
                     : `application::${activeModel?.model}.${activeModel?.model}`
