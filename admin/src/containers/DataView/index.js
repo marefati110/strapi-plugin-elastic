@@ -16,6 +16,7 @@ const DataView = ({
   limit,
   totalCount,
   onChangeParams,
+  isMigrateActive,
 }) => {
   const tableHeaders = useMemo(
     () =>
@@ -103,6 +104,7 @@ const DataView = ({
             migrate(activeModel.model);
           }}
           className="ml-auto"
+          disabled={!isMigrateActive}
         >
           migrate
         </Button>
@@ -171,6 +173,7 @@ DataView.propTypes = {
   totalCount: PropTypes.number.isRequired,
   limit: PropTypes.string.isRequired,
   onChangeParams: PropTypes.func.isRequired,
+  isMigrateActive: PropTypes.bool.isRequired,
 };
 
 export default memo(DataView);
