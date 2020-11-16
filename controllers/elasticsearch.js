@@ -62,7 +62,6 @@ module.exports = {
       };
       //
     } catch (e) {
-      console.log(0);
       status = {
         deleted: true,
         created: false,
