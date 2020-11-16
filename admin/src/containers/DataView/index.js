@@ -18,6 +18,9 @@ const DataView = ({
   totalCount,
   onChangeParams,
   isMigrateActive,
+  isDeleted,
+  isCreated,
+  hasMapping,
 }) => {
   const history = useHistory();
   const tableHeaders = useMemo(
@@ -113,6 +116,7 @@ const DataView = ({
         <Button
           color="primary"
           isLoading={isCreating}
+          disabled={isCreated}
           onClick={() => {
             createIndex(activeModel.model);
           }}
@@ -123,6 +127,7 @@ const DataView = ({
         <Button
           color="delete"
           isLoading={isDeleting}
+          disabled={isDeleted}
           onClick={() => {
             deleteIndex(activeModel.model);
           }}
@@ -188,6 +193,9 @@ DataView.propTypes = {
   limit: PropTypes.string.isRequired,
   onChangeParams: PropTypes.func.isRequired,
   isMigrateActive: PropTypes.bool.isRequired,
+  isDeleted: PropTypes.bool.isRequired,
+  isCreated: PropTypes.bool.isRequired,
+  hasMapping: PropTypes.bool.isRequired,
 };
 
 export default memo(DataView);

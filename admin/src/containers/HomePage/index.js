@@ -23,6 +23,10 @@ const HomePage = () => {
   const [page, setPage] = useState(INITIAL_PAGE);
   const [limit, setLimit] = useState(INITIAL_LIMIT); // it should be string for select
   const [totalCount, setTotalCount] = useState(10); // it should be string for select
+  const [isCreated, setIsCreated] = useState(true);
+  const [isDeleted, setIsDeleted] = useState(true);
+  const [hasMapping, setHasMapping] = useState(true);
+  // let isCreated;
 
   const onChangeParams = ({ target }) => {
     switch (target.name) {
@@ -62,6 +66,9 @@ const HomePage = () => {
         }
       )
         .then((res) => {
+          setIsCreated(res.status.created);
+          setIsDeleted(res.status.deleted);
+          setHasMapping(res.status.hasMapping);
           setModelData(res.data);
           setTotalCount(res.total || 10);
         })
@@ -91,6 +98,9 @@ const HomePage = () => {
           onChangeParams={onChangeParams}
           totalCount={totalCount}
           isMigrateActive={activeModel?.migration}
+          isCreated={isCreated}
+          isDeleted={isDeleted}
+          hasMapping={hasMapping}
         />
       </div>
     </div>

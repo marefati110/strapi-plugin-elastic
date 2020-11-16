@@ -3,9 +3,9 @@
   "version": "1.1.0",
   "description": "this package help you easily send your data to elasticsearch.",
   "strapi": {
-    "name": "elasticsearch",
+    "name": "Elasticsearch",
     "icon": "plug",
-    "description": "Description of elasticsearch plugin."
+    "description": "this package help you easily send your data to elasticsearch."
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.8.0",

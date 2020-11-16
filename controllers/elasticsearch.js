@@ -47,8 +47,36 @@ module.exports = {
   },
   fetchModel: async (ctx) => {
     const { index, _start, _limit } = ctx.query;
-    let data;
+    let data, count, map;
+    let status = {};
 
+    try {
+      //
+      count = await strapi.elastic.count({ index });
+      //
+      map = await strapi.elastic.indices.getMapping({ index });
+      //
+      status = {
+        deleted: false,
+        created: true,
+      };
+      //
+    } catch (e) {
+      console.log(0);
+      status = {
+        deleted: true,
+        created: false,
+      };
+    }
+    if (status.created && !_.isEmpty(map.body[index])) {
+      //
+      status.hasMapping = true;
+      //
+    } else {
+      //
+      status.hasMapping = false;
+      //
+    }
     try {
       data = await strapi.elastic.search({
         index,
@@ -68,7 +96,7 @@ module.exports = {
         },
       });
     } catch (e) {
-      return ctx.send({ data: null, total: 0 });
+      return ctx.send({ data: null, total: 0, status });
     }
 
     if (data.statusCode !== 200) return ctx.badRequest();
@@ -77,21 +105,30 @@ module.exports = {
     for (const item of data.body.hits.hits) {
       const source = item['_source'];
       if (!_.isEmpty(source)) {
-        // remove one to many data
+        //
         const sourceKeys = Object.keys(source);
 
         for (const key of sourceKeys) {
+          //
           if (_.isArray(source[key])) {
-            source[key] = 'Array';
+            //
+            source[key] = '[Array]';
+            //
           } else if (_.isObject(source[key])) {
-            source[key] = 'Object';
+            //
+            source[key] = '[Object]';
+            //
           }
         }
         res.push(source);
       }
     }
 
-    return ctx.send({ data: res, total: data.body.hits.total.value });
+    return ctx.send({
+      data: res,
+      total: count && count.body && count.body.count,
+      status,
+    });
   },
   generateIndexConfig: async (ctx) => {
     const data = ctx.request.body;

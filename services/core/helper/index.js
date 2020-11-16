@@ -172,9 +172,6 @@ module.exports = ({ env }) => ({
   models: ${JSON.stringify(modelsConfig, null, 4)}
 });`;
 
-
-
-
 module.exports = {
   generateMainConfig: () => {
     const rootPath = path.resolve(__dirname, '../../../../../');
@@ -234,12 +231,19 @@ module.exports = {
     const enableModels = models.filter((model) => model.enable === true);
 
     await enableModels.forEach(async (model) => {
-      const indexName = model.index_postfix + model.index + model.index_postfix;
+      const indicesMapping = {};
+      // const indexName = model.index_postfix + model.index + model.index_postfix;
       try {
-        await strapi.elastic.indices.create({ index: indexName });
-        strapi.elastic.log.debug(`${model.index} index created.`);
-        // eslint-disable-next-line no-empty
+        const indexMap = await strapi.elastic.indices.getMapping({
+          index: model.index,
+        });
+
+        if (indexMap.status === 200) {
+          indicesMapping[model.index] = indexMap.body;
+        }
       } catch (e) {}
+
+      strapi.elastic.indicesMapping = indicesMapping;
     });
   },
   checkNewVersion: async () => {
@@ -262,24 +266,42 @@ module.exports = {
       );
     }
   },
-  initialStrapi: () => {
+  initialStrapi: async () => {
+    // const indicesMapping = {};
+    // const indexFilePattern = /([a-zA-z0-9-_]*)\.index\.json/;
+
+    // const rootPath = path.resolve(__dirname, '../../../../../');
+    // const exportPath = `${rootPath}/exports/elasticsearch`;
+
+    // const indicesMapConfigFile = fs.readdirSync(exportPath);
+
+    const { models } = strapi.config.elasticsearch;
     const indicesMapping = {};
-    const indexFilePattern = /([a-zA-z0-9-_]*)\.index\.json/;
 
-    const rootPath = path.resolve(__dirname, '../../../../../');
-    const exportPath = `${rootPath}/exports/elasticsearch`;
+    const enableModels = models.filter((model) => model.enable === true);
 
-    const indicesMapConfigFile = fs.readdirSync(exportPath);
+    for (const model of enableModels) {
+      try {
+        const indexMap = await strapi.elastic.indices.getMapping({
+          index: model.index,
+        });
 
-    indicesMapConfigFile.forEach((index) => {
-      if (indexFilePattern.test(index)) {
-        const map = require(`${exportPath}/${index}`);
-        const [, model] = index.match(indexFilePattern);
-        indicesMapping[model] = map;
-      }
-    });
-
+        if (indexMap.statusCode === 200) {
+          indicesMapping[model.index] = indexMap.body[model.index];
+        }
+      } catch (e) {}
+    }
     strapi.elastic.indicesMapping = indicesMapping;
+
+    // indicesMapConfigFile.forEach((index) => {
+    //   if (indexFilePattern.test(index)) {
+    //     const map = require(`${exportPath}/${index}`);
+    //     const [, model] = index.match(indexFilePattern);
+    //     indicesMapping[model] = map;
+    //   }
+    // });
+
+    // strapi.elastic.indicesMapping = indicesMapping;
   },
   compareDataWithMap,
 };
