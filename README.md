@@ -98,7 +98,7 @@ After installing the plugin and running it, it creates an config file in the `PR
 
 In the connections section, the settings related to the connection to the elasticsearch are listed, there is also a help link
 
-In the setting section, there are the initial settings related to the elastic plugin
+In the setting section, there are the initial settings related to the elastic plugin.
 
 In the models section for all models in the `Project/api/**` path there is a model being built and you can change the initial settings
 
