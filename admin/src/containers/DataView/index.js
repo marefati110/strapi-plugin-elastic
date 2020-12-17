@@ -21,6 +21,7 @@ const DataView = ({
   isDeleted,
   isCreated,
   hasMapping,
+  refreshData,
 }) => {
   const history = useHistory();
   const tableHeaders = useMemo(
@@ -63,8 +64,10 @@ const DataView = ({
       body: { model },
     })
       .then((res) => {
-        if (res.success) alert('Migration was successful');
-        else alert('Migration was unsuccessful');
+        if (res.success) {
+          alert('Migration was successful');
+          refreshData();
+        } else alert('Migration was unsuccessful');
       })
       .catch(() => alert('Migration was unsuccessful'))
       .finally(() => setIsMigrating(false));
@@ -77,8 +80,10 @@ const DataView = ({
       body: { model },
     })
       .then((res) => {
-        if (res.success) alert(`${model} deleted`);
-        else alert(`cannot deleted ${model}`);
+        if (res.success) {
+          alert(`${model} deleted`);
+          refreshData();
+        } else alert(`cannot deleted ${model}`);
       })
       .catch(() => alert(`cannot deleted ${model}`))
       .finally(() => setIsDeleting(false));
@@ -186,6 +191,7 @@ const DataView = ({
 
 DataView.propTypes = {
   data: PropTypes.array.isRequired,
+  refreshData: PropTypes.func.isRequired,
   activeModel: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   page: PropTypes.number.isRequired,

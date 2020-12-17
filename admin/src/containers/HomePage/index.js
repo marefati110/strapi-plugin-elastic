@@ -26,7 +26,6 @@ const HomePage = () => {
   const [isCreated, setIsCreated] = useState(true);
   const [isDeleted, setIsDeleted] = useState(true);
   const [hasMapping, setHasMapping] = useState(true);
-  // let isCreated;
 
   const onChangeParams = ({ target }) => {
     switch (target.name) {
@@ -43,19 +42,8 @@ const HomePage = () => {
     }
   };
 
-  useEffect(() => {
-    // fetch all models
-    request(`/strapi-plugin-elastic/models`, {
-      method: 'GET',
-    }).then((res) => {
-      if (res && res.length && res.length > 0) {
-        setModels(res);
-        setActiveModel(res[0]);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
+  // fetch data for active model
+  const fetchData = () => {
     if (activeModel && activeModel.index) {
       // fetch for the model data
       setLoading(true);
@@ -74,6 +62,22 @@ const HomePage = () => {
         })
         .finally(() => setLoading(false));
     }
+  };
+
+  useEffect(() => {
+    // fetch all models
+    request(`/strapi-plugin-elastic/models`, {
+      method: 'GET',
+    }).then((res) => {
+      if (res && res.length && res.length > 0) {
+        setModels(res);
+        setActiveModel(res[0]);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    fetchData();
   }, [activeModel, page, limit]);
 
   return (
@@ -91,6 +95,7 @@ const HomePage = () => {
         />
         <DataView
           data={modelData}
+          refreshData={fetchData}
           activeModel={activeModel}
           loading={loading}
           page={page}
