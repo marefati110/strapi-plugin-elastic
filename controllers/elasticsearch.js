@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const {
-  helper: { generateMappings },
+  helper: { generateMappings, findMappingConfig },
 } = require('../services');
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
       message: 'on progress it can take a few minuets',
     });
 
-    strapi.elastic.migrateModel.migrateModels();
+    strapi.elastic.migrateModels();
   },
   migrateModel: async (ctx) => {
     const { model } = ctx.request.body;
@@ -122,7 +122,6 @@ module.exports = {
         res.push(source);
       }
     }
-
     return ctx.send({
       data: res,
       total: count && count.body && count.body.count,
@@ -164,23 +163,21 @@ module.exports = {
     const { models } = strapi.config.elasticsearch;
     const targetModel = models.find((item) => item.model === model);
 
+    const mapping = await findMappingConfig({ targetModel });
+
     const indexConfig = strapi.elastic.indicesMapping[targetModel.model];
 
     const options = {
       index: targetModel.index,
     };
 
-    if (indexConfig) {
-      options.body = indexConfig;
+    if (mapping || indexConfig) {
+      options.body = mapping[targetModel.index] || indexConfig;
     }
 
-    try {
-      await strapi.elastic.indices.create(options);
+    await strapi.elastic.indices.create(options);
 
-      return ctx.send({ success: true });
-    } catch (e) {
-      return ctx.throw(500);
-    }
+    return ctx.send({ success: true });
   },
   deleteIndex: async (ctx) => {
     const { model } = ctx.request.body;

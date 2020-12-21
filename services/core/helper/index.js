@@ -1,145 +1,9 @@
+'user strict';
+
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const _ = require('lodash');
-
-function compareDataWithMap({ properties, docs }) {
-  // initial variable;
-  let outputDataType = 'array';
-  let newMappings = false;
-
-  const result = [];
-
-  // convert docs(object) to array
-  if (!_.isArray(docs)) {
-    docs = [docs];
-
-    // outputDataType use for remind input data type to return with same type
-    outputDataType = 'object';
-  }
-  const propertiesKeys = Object.keys(properties);
-
-  for (const doc of docs) {
-    //
-    const res = {};
-    const dockKeyUsed = [];
-
-    const docKeys = Object.keys(doc);
-
-    for (const docKey of docKeys) {
-      // check type of data with mapping in config
-
-      if (propertiesKeys.includes(docKey)) {
-        //
-
-        const DOC = doc[docKey];
-        const DOC_PROPERTY = properties[docKey].type;
-
-        // recursive function for nested object/array
-        if (
-          _.isObject(DOC) &&
-          _.isObject(properties[docKey].properties) &&
-          !_.isDate(DOC) &&
-          !_.isEmpty(DOC) &&
-          !_.isEmpty(properties[docKey].properties)
-        ) {
-          const filteredData = compareDataWithMap({
-            properties: properties[docKey].properties,
-            docs: DOC,
-          });
-
-          if (!_.isEmpty(filteredData.result)) {
-            // check all element
-            const finalArray = [];
-            if (_.isArray(filteredData.result)) {
-              //
-              filteredData.result.forEach((item) => {
-                //
-                if (!_.isEmpty(item)) {
-                  //
-                  finalArray.push(item);
-                  //
-                }
-                //
-              });
-              //
-              filteredData.result = finalArray;
-              //
-            }
-
-            res[docKey] = filteredData.result;
-
-            dockKeyUsed.push(docKey);
-            //
-          } else {
-            //
-            // res[docKey] = null;
-            dockKeyUsed.push(docKey);
-            //
-          }
-          newMappings = filteredData.newMappings;
-
-          // check numbers
-        } else if (_.isNumber(DOC) && DOC_PROPERTY === 'long') {
-          //
-          res[docKey] = DOC;
-          dockKeyUsed.push(docKey);
-
-          // check strings
-        } else if (_.isString(DOC) && DOC_PROPERTY === 'text') {
-          //
-          res[docKey] = DOC;
-          dockKeyUsed.push(docKey);
-
-          // check boolean
-        } else if (_.isBoolean(DOC) && DOC_PROPERTY === 'boolean') {
-          //
-          res[docKey] = DOC;
-          dockKeyUsed.push(docKey);
-
-          // check date
-        } else if (_.isDate(DOC) && DOC_PROPERTY === 'date') {
-          //
-          res[docKey] = DOC;
-          dockKeyUsed.push(docKey);
-
-          // check date
-        } else if (_.isString(DOC) && DOC_PROPERTY === 'date') {
-          //
-          res[docKey] = DOC;
-          dockKeyUsed.push(docKey);
-
-          // other types
-        } else {
-          //
-          // res[docKey] = null;
-          dockKeyUsed.push(docKey);
-          //
-        }
-      } else {
-        //
-        //some logic
-        //
-      }
-    }
-    // push property that exist in mapping config but not in entered data
-    const mainKeys = _.difference(propertiesKeys, dockKeyUsed);
-    for (const key of mainKeys) {
-      res[key] = null;
-    }
-    result.push(res);
-  }
-  // return data it depends on outputDataType
-  if (outputDataType === 'array') {
-    //
-    return { result, newMappings };
-    //
-  } else if (outputDataType === 'object') {
-    //
-    return { result: result[0], newMappings };
-    //
-  }
-}
 
 const modelConfigTemplate = (model) => ({
   model,
@@ -169,7 +33,7 @@ module.exports = ({ env }) => ({
     index_postfix: '',
     removeExistIndexForMigration: false,
   },
-  models: ${JSON.stringify(modelsConfig, null, 4)}
+  models: ${JSON.stringify(modelsConfig, null, 2)}
 });`;
 
 module.exports = {
@@ -195,7 +59,145 @@ module.exports = {
       });
     }
   },
+  compareDataWithMap: ({ properties, docs }) => {
+    // initial variable;
+    let outputDataType = 'array';
+    let newMappings = false;
+
+    const result = [];
+
+    // convert docs(object) to array
+    if (!_.isArray(docs)) {
+      docs = [docs];
+
+      // outputDataType use for remind input data type to return with same type
+      outputDataType = 'object';
+    }
+    const propertiesKeys = Object.keys(properties);
+
+    for (const doc of docs) {
+      //
+      const res = {};
+      const dockKeyUsed = [];
+
+      const docKeys = Object.keys(doc);
+
+      for (const docKey of docKeys) {
+        // check type of data with mapping in config
+
+        if (propertiesKeys.includes(docKey)) {
+          //
+
+          const DOC = doc[docKey];
+          const DOC_PROPERTY = properties[docKey].type;
+
+          // recursive function for nested object/array
+          if (
+            _.isObject(DOC) &&
+            _.isObject(properties[docKey].properties) &&
+            !_.isDate(DOC) &&
+            !_.isEmpty(DOC) &&
+            !_.isEmpty(properties[docKey].properties)
+          ) {
+            const filteredData = module.exports.compareDataWithMap({
+              properties: properties[docKey].properties,
+              docs: DOC,
+            });
+
+            if (!_.isEmpty(filteredData.result)) {
+              // check all element
+              const finalArray = [];
+              if (_.isArray(filteredData.result)) {
+                //
+                filteredData.result.forEach((item) => {
+                  //
+                  if (!_.isEmpty(item)) {
+                    //
+                    finalArray.push(item);
+                    //
+                  }
+                  //
+                });
+                //
+                filteredData.result = finalArray;
+                //
+              }
+
+              res[docKey] = filteredData.result;
+
+              dockKeyUsed.push(docKey);
+              //
+            } else {
+              //
+              // res[docKey] = null;
+              dockKeyUsed.push(docKey);
+              //
+            }
+            newMappings = filteredData.newMappings;
+
+            // check numbers
+          } else if (_.isNumber(DOC) && DOC_PROPERTY === 'long') {
+            //
+            res[docKey] = DOC;
+            dockKeyUsed.push(docKey);
+
+            // check strings
+          } else if (_.isString(DOC) && DOC_PROPERTY === 'text') {
+            //
+            res[docKey] = DOC;
+            dockKeyUsed.push(docKey);
+
+            // check boolean
+          } else if (_.isBoolean(DOC) && DOC_PROPERTY === 'boolean') {
+            //
+            res[docKey] = DOC;
+            dockKeyUsed.push(docKey);
+
+            // check date
+          } else if (_.isDate(DOC) && DOC_PROPERTY === 'date') {
+            //
+            res[docKey] = DOC;
+            dockKeyUsed.push(docKey);
+
+            // check date
+          } else if (_.isString(DOC) && DOC_PROPERTY === 'date') {
+            //
+            res[docKey] = DOC;
+            dockKeyUsed.push(docKey);
+
+            // other types
+          } else {
+            //
+            // res[docKey] = null;
+            dockKeyUsed.push(docKey);
+            //
+          }
+        } else {
+          //
+          //some logic
+          //
+        }
+      }
+      // push property that exist in mapping config but not in entered data
+      const mainKeys = _.difference(propertiesKeys, dockKeyUsed);
+      for (const key of mainKeys) {
+        res[key] = null;
+      }
+      result.push(res);
+    }
+    // return data it depends on outputDataType
+    if (outputDataType === 'array') {
+      //
+      return { result, newMappings };
+      //
+    } else if (outputDataType === 'object') {
+      //
+      return { result: result[0], newMappings };
+      //
+    }
+  },
   generateMappings: async ({ targetModels, data }) => {
+    //
     if (!_.isArray(targetModels)) targetModels = [targetModels];
 
     const rootPath = path.resolve(__dirname, '../../../../../');
@@ -203,7 +205,6 @@ module.exports = {
 
     for (const targetModel of targetModels) {
       let map = {};
-
       // get mapping;
       if (!data) {
         map = await strapi.elastic.indices.getMapping({
@@ -220,6 +221,7 @@ module.exports = {
           }
         );
       }
+
       //
     }
   },
@@ -264,6 +266,20 @@ module.exports = {
       );
     }
   },
+  findMappingConfig: async ({ targetModel }) => {
+    //
+    const rootPath = path.resolve(__dirname, '../../../../../');
+
+    const mappingConfigFilePath = `${rootPath}/exports/elasticsearch/${targetModel.model}.index.json`;
+
+    const indicesMapConfigFile = fs.existsSync(mappingConfigFilePath);
+
+    if (!indicesMapConfigFile) return;
+
+    const map = require(mappingConfigFilePath);
+
+    return map;
+  },
   initialStrapi: async () => {
     strapi.elastic.indicesMapping = {};
 
@@ -292,21 +308,34 @@ module.exports = {
         const targetModel = models.find((item) => item.model === model);
 
         if (targetModel && targetModel.enable) {
-          strapi.elastic.indicesMapping[targetModel.model] = map;
+          strapi.elastic.indicesMapping[targetModel.model] =
+            map[targetModel.index];
         }
       }
     }
 
     for (const targetModel of enableModels) {
+      //
       if (!strapi.elastic.indicesMapping[targetModel.model]) {
+        //
         try {
+          //
+
           const indexMap = await strapi.elastic.indices.getMapping({
             index: targetModel.index,
           });
 
           if (indexMap.statusCode === 200) {
+            //
             strapi.elastic.indicesMapping[targetModel.model] =
               indexMap.body[targetModel.index];
+
+            module.exports.generateMappings({
+              targetModels: targetModel,
+              data: indexMap.body,
+            });
+
+            //
           }
         } catch (e) {
           strapi.log.warn(
@@ -315,6 +344,7 @@ module.exports = {
         }
       }
     }
+
+    //
   },
-  compareDataWithMap,
 };
