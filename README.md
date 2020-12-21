@@ -3,7 +3,7 @@
  <img src="https://i.ibb.co/zG6Nj3g/Untitled-1.jpg" alt="Project logo"></a>
   <br/>
   <br/>
-  <img width="90%" align="center" src="https://i.ibb.co/BqgGthL/plugin.png" alt="plugin" border="1">
+  <img width="90%" align="center" src="https://i.ibb.co/PwdPtP7/2020-12-21-22-18.png" alt="plugin" border="1">
 </p>
 
 <div align="center">
@@ -14,18 +14,22 @@
 [![GitHub license](https://img.shields.io/github/license/marefati110/strapi-plugin-elasticsearch)](https://github.com/marefati110/strapi-plugin-elasticsearch)
 
 </div>
-
 <hr >
+<h4 align="center">
+tested on strapi v3.x
+
+latest test: v3.4.0
+
+</h4>
+<bt/>
 <h4 align="center">
   This plugin has not been tested on mongodb
 </h4>
 <hr/>
-
+<br/>
 <p align="center"> 
   The purpose of developing this plugin is to use the elastic search engine in Strapi to help the application development process
 </p>
-
-<hr/>
 
 ## 📝 Table of Contents
 
@@ -371,10 +375,17 @@ strapi.elastic.log.info('some message', logData);
 to avoid config plugin for all model or write a lot of code we can create cron job for migration
 
 ```js
+const moment = require('moment');
 module.exports = {
-  '*/10 * * * *': () => {
-    const t = new Date()
-    strapi.elastic.migrateModels({ conditions: { updated_at_gt: t.setDate(t.getMinute() - 10); } });
+  '*/10 * * * *': async () => {
+    const updateTime = moment()
+      .subtract(10, 'minutes')
+      .format('YYYY-MM-DD HH:mm:ss');
+
+    // currentTime
+    await strapi.elastic.migrateModels({
+      conditions: { updated_at_gt: updateTime },
+    });
   },
 };
 ```
