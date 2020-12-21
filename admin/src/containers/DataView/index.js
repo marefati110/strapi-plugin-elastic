@@ -96,6 +96,7 @@ const DataView = ({
       body: { model },
     })
       .then((res) => {
+        refreshData();
         if (res.success) alert(`${model} created`);
         else alert(`cannot create ${model}`);
       })
