@@ -61,6 +61,17 @@ module.exports = {
   },
   compareDataWithMap: ({ properties, docs }) => {
     // initial variable;
+    const elasticSearchNumericTypes = [
+      'long',
+      'integer',
+      'short',
+      'byte',
+      'double',
+      'float',
+      'half_float',
+      'scaled_float',
+      'unsigned_long',
+    ];
     let outputDataType = 'array';
     let newMappings = false;
 
@@ -136,7 +147,10 @@ module.exports = {
             newMappings = filteredData.newMappings;
 
             // check numbers
-          } else if (_.isNumber(DOC) && DOC_PROPERTY === 'long') {
+          } else if (
+            _.isNumber(DOC) &&
+            elasticSearchNumericTypes.includes(DOC_PROPERTY)
+          ) {
             //
             res[docKey] = DOC;
             dockKeyUsed.push(docKey);

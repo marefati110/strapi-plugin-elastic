@@ -21,7 +21,7 @@ const migrateModel = async (model, params = {}) => {
   let start = 0;
   strapi.elastic.log.debug(`Importing ${targetModel.model} to elasticsearch`);
   // define variable for progress bar
-  let index_length = await strapi.services[targetModel.model].count();
+  let index_length = await strapi.query(targetModel.model).count();
   index_length = parseInt(index_length / setting.importLimit);
 
   //
