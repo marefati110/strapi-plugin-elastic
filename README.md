@@ -386,7 +386,7 @@ module.exports = {
     await strapi.elastic.migrateModels({
       conditions: {
         updated_at_gt: updateTime,
-        /* to utilise Draft/Publish feature & migrate only published articles 
+        /* to utilise Draft/Publish feature & migrate only published entities 
         you can add following in conditions
         */
         _publicationState: 'live'
