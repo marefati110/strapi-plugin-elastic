@@ -384,7 +384,13 @@ module.exports = {
 
     // currentTime
     await strapi.elastic.migrateModels({
-      conditions: { updated_at_gt: updateTime },
+      conditions: {
+        updated_at_gt: updateTime,
+        /* to utilise Draft/Publish feature & migrate only published articles 
+        you can add following in conditions
+        */
+        _publicationState: 'live'
+      },
     });
   },
 };
