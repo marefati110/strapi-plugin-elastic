@@ -3,14 +3,14 @@ const _ = require('lodash');
 module.exports = {
   checkRequest: (ctx) => {
     const { setting } = strapi.config.elasticsearch;
-    let status = false;
-    if (
+
+    setting.validMethod = setting.validMethod || ['PUT', 'POST', 'DELETE'];
+    setting.validStatus = setting.validStatus || [200, 201];
+
+    return (
       setting.validMethod.includes(ctx.request.method) &&
       setting.validStatus.includes(ctx.response.status)
-    )
-      status = true;
-
-    return status;
+    );
   },
   findModel: async ({ reqUrl, models }) => {
     let res;
@@ -20,7 +20,7 @@ module.exports = {
         const re = new RegExp(items);
         if (_.isString(items)) {
           const status = re.test(reqUrl);
-          if (status && model.enable) {
+          if (status && model.enabled) {
             const targetModel = model;
             res = targetModel;
           }
@@ -30,7 +30,7 @@ module.exports = {
             const re = new RegExp(url);
             const status = re.test(reqUrl);
 
-            if (status && model.enable) {
+            if (status && model.enabled) {
               const targetModel = model;
               targetModel.pk = items[url].pk;
               targetModel.relations = items[url].relations || [];
@@ -45,7 +45,8 @@ module.exports = {
     return res;
   },
   isContentManagerUrl: async ({ models, reqUrl }) => {
-    const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)::([a-zA-Z-]+).(\w+)|\/(\d*)/;
+    //
+    const contentManagerUrlPattern = /\/content-manager\/collection-types\/([a-zA-Z-_]+)::([a-zA-Z-_]+).(\w+)\/(\d+)/;
 
     const result = reqUrl.match(contentManagerUrlPattern);
 
@@ -53,21 +54,19 @@ module.exports = {
 
     const [, , , model] = result;
 
-    const targetModel = await models.find(
-      (configModel) => configModel.model === model
-    );
+    const targetModel = await models.find((item) => item.model === model);
 
     if (
       !targetModel ||
-      targetModel.enable === false ||
-      targetModel.supportAdminPanel === false
+      targetModel.enabled !== true ||
+      targetModel.supportAdminPanel !== true
     )
       return;
 
     return targetModel;
   },
   isDeleteAllUrl: async ({ models, reqUrl }) => {
-    const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)\/\w*::([a-zA-Z-]+).(\w+)|\/(\d*)/;
+    const contentManagerUrlPattern = /^\/content-manager\/collection-types\/(\w+)\/\w*::([a-zA-Z-]+).(\w+)|\/(\d*)/;
 
     const result = reqUrl.match(contentManagerUrlPattern);
 
@@ -81,24 +80,24 @@ module.exports = {
 
     if (
       !targetModel ||
-      targetModel.enable === false ||
+      targetModel.enabled === false ||
       targetModel.supportAdminPanel === false
     )
       return;
 
     return targetModel;
   },
-  getDeleteIds: async ({ query, reqUrl }) => {
-    const contentManagerUrlPattern = /^\/content-manager\/explorer\/(\w+)\/\w*::([a-zA-Z-]+).(\w+)|\/(\d*)/;
+  getDeleteIds: async ({ body, reqUrl }) => {
+    const contentManagerUrlPattern = /\/content-manager\/collection-types\/(\w+)::([a-zA-Z-_]+).([a-zA-Z-_]+)\/actions\/bulkDelete/;
 
     const result = contentManagerUrlPattern.test(reqUrl);
 
-    if (!result || !query) return;
+    if (!result || !body) return;
 
     const ids = [];
-    const keys = Object.keys(query);
-    for (const key of keys) {
-      ids.push(+query[key]);
+
+    for (const data of body) {
+      ids.push(data.id);
     }
 
     return ids;

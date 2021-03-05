@@ -9,7 +9,7 @@ const modelConfigTemplate = (model) => ({
   model,
   index: model,
   plugin: null,
-  enable: false,
+  enabled: false,
   migration: false,
   pk: 'id',
   relations: [],
@@ -26,8 +26,6 @@ module.exports = ({ env }) => ({
     node: env('ELASTICSEARCH_HOST', 'http://127.0.0.1:9200'),
   },
   setting: {
-    validStatus: [200, 201],
-    validMethod: ['PUT', 'POST', 'DELETE'],
     importLimit: 3000,
     index_postfix: '',
     index_postfix: '',
@@ -242,7 +240,7 @@ module.exports = {
   checkEnableModels: async () => {
     const { models } = strapi.config.elasticsearch;
 
-    const enableModels = models.filter((model) => model.enable === true);
+    const enableModels = models.filter((model) => model.enabled);
 
     await enableModels.forEach(async (model) => {
       const indicesMapping = {};
@@ -309,7 +307,7 @@ module.exports = {
 
     const indicesMapConfigFile = fs.readdirSync(exportPath);
 
-    const enableModels = models.filter((model) => model.enable === true);
+    const enableModels = models.filter((model) => model.enabled);
 
     for (const index of indicesMapConfigFile) {
       //
@@ -321,7 +319,7 @@ module.exports = {
 
         const targetModel = models.find((item) => item.model === model);
 
-        if (targetModel && targetModel.enable) {
+        if (targetModel && targetModel.enabled) {
           strapi.elastic.indicesMapping[targetModel.model] =
             map[targetModel.index];
         }

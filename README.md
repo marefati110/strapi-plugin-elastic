@@ -70,7 +70,7 @@ Install plugin
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
 - Go to `PROJECT/config/middleware.js` and add `"elastic"` to end of `load.before`
-- enable `elastic` middleware in setting
+- enabled `elastic` middleware in setting
 
 <p align="center">
 <img src="https://i.ibb.co/kS5Cb1t/code4.png" alt="code4" border="0">
@@ -127,7 +127,7 @@ At the end of the settings should be as follows
   model: 'article',
   pk: 'id',
   plugin: null, // changed to true
-  enable: true,
+  enabled: true,
   index: 'article',
   relations: [],
   conditions: {},
@@ -161,7 +161,7 @@ and model config should change to
   model: 'article',
   pk: 'id',
   plugin: null,
-  enable: true,
+  enabled: true,
   index: 'article',
   relations: [],
   conditions: {},
@@ -200,7 +200,7 @@ config model should change to
   model: 'article',
   pk: 'id',
   plugin: null,
-  enable: true,
+  enabled: true,
   index: 'article',
   relations: [],
   conditions: {},
@@ -261,15 +261,15 @@ strapi.elastic.destroy('article', { id: articleID });
 | `strapi.elastic.destroy`        | delete data                    |     [example](#destroy)      |
 | `strapi.elastic.migrateById`    | migrate data                   |   [example](#migrateById)    |
 | `strapi.elastic.migrateModel`   | migrate specific data          |   [example](#migrateModel)   |
-| `strapi.elastic.models`         | migrate all enable models      |      [example](#models)      |
+| `strapi.elastic.models`         | migrate all enabled models     |      [example](#models)      |
 | `strapi.log`                    | log data to elasticsearch      |     [example](#logging)      |
 
 # Api <a name="api"></a>
 
-| Url             | Method | Description               | body                   |
-| :-------------- | :----: | :------------------------ | ---------------------- |
-| /migrate-models |  POST  | Migrate all enable Models |                        |
-| /migrate-Model  |  POST  | Migrate specific model    | `{model:'MODEL_NAME'}` |
+| Url             | Method | Description                | body                   |
+| :-------------- | :----: | :------------------------- | ---------------------- |
+| /migrate-models |  POST  | Migrate all enabled Models |                        |
+| /migrate-Model  |  POST  | Migrate specific model     | `{model:'MODEL_NAME'}` |
 
 # Examples <a name="example"></a>
 

@@ -102,7 +102,7 @@ const HomePage = () => {
           limit={limit}
           onChangeParams={onChangeParams}
           totalCount={totalCount}
-          isMigrateActive={activeModel?.migration}
+          isMigrateActive={!!activeModel?.migration}
           isCreated={isCreated}
           isDeleted={isDeleted}
           hasMapping={hasMapping}

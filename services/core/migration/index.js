@@ -1,5 +1,3 @@
-const _ = require('lodash');
-
 const { compareDataWithMap } = require('../helper');
 
 const migrateModel = async (model, params = {}) => {
@@ -7,24 +5,32 @@ const migrateModel = async (model, params = {}) => {
   params.conditions = params.conditions || {};
 
   const { models, setting } = strapi.config.elasticsearch;
+
+  // set default value
+  setting.importLimit = setting.importLimit || 3000;
+
   const targetModel = models.find((item) => item.model === model);
 
-  const indexConfig = strapi.elastic.indicesMapping[targetModel.model];
+  let indexConfig = strapi.elastic.indicesMapping[targetModel.model];
+
+  const { indexExist } = await strapi.elastic.indices.exists({
+    index: targetModel.index,
+  });
+
+  indexConfig = indexExist ? indexConfig : null;
 
   if (
     !targetModel ||
-    targetModel.enable === false ||
+    targetModel.enabled === false ||
     targetModel.migration === false
   )
-    return null;
+    return;
 
   let start = 0;
   strapi.elastic.log.debug(`Importing ${targetModel.model} to elasticsearch`);
-  // define variable for progress bar
+
   let index_length = await strapi.query(targetModel.model).count();
   index_length = parseInt(index_length / setting.importLimit);
-
-  //
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
@@ -74,15 +80,16 @@ const migrateModel = async (model, params = {}) => {
 
     strapi.log.debug(`Sending ${targetModel.model} model to elasticsearch...`);
     try {
-      const elastic = await strapi.elastic.bulk({ refresh: true, body });
+      await strapi.elastic.bulk({ refresh: true, body });
     } catch (e) {
       strapi.log.error(e);
       return;
     }
-    //
+
     const end_elastic = Date.now();
-    //
+
     start++;
+
     // progress bar
     strapi.log.info(
       `(${start}/${index_length + 1}) Imported to ${
@@ -93,6 +100,7 @@ const migrateModel = async (model, params = {}) => {
         (end_elastic - start_elastic) / 1000
       )}s`
     );
+
     //
   }
 };
@@ -105,7 +113,7 @@ const migrateModels = async (params = {}) => {
   // remove elasticsearch index before migration
   if (setting.removeExistIndexForMigration) {
     await models.forEach(async (model) => {
-      if (model.enable && model.migration) {
+      if (model.enabled && model.migration) {
         await strapi.elastic.indices.delete({ index: model.index });
       }
     });
@@ -127,7 +135,7 @@ const migrateModels = async (params = {}) => {
     }
   }
 
-  strapi.log.info(`All models imported...`);
+  strapi.log.info('All models imported...');
 };
 
 module.exports = { migrateModels, migrateModel };

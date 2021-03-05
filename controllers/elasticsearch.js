@@ -4,29 +4,16 @@ const {
 } = require('../services');
 
 module.exports = {
-  migrateModels: async (ctx) => {
-    await ctx.send({
-      message: 'on progress it can take a few minuets',
-    });
-
-    strapi.elastic.migrateModels();
-  },
-  migrateModel: async (ctx) => {
-    const { model } = ctx.request.body;
-
-    await strapi.elastic.migrateModel(model);
-    return ctx.send({ success: true });
-  },
   fetchModels: (ctx) => {
     const { models } = strapi.config.elasticsearch;
 
-    const enabledModels = models.filter((model) => model.enable);
-    const sortedEnabledModels = _.sortBy(enabledModels, (item) => {
-      item.model;
-    });
+    const enabledModels = models.filter((model) => model.enabled);
 
-    const disabledModels = models.filter((model) => !model.enable);
-    const sortedDisabledModels = _.sortBy(disabledModels, (item) => item.model);
+    const sortedEnabledModels = _.orderBy(enabledModels, ['model'], ['asc']);
+
+    const disabledModels = models.filter((model) => !model.enabled);
+
+    const sortedDisabledModels = _.orderBy(disabledModels, ['model'], ['asc']);
 
     // there is a bug here
     // models are not sorted
@@ -40,9 +27,10 @@ module.exports = {
         'index',
         'migration',
         'pk',
-        'enable',
+        'enabled',
       ])
     );
+
     return ctx.send(response);
   },
   fetchModel: async (ctx) => {
@@ -127,6 +115,19 @@ module.exports = {
       total: count && count.body && count.body.count,
       status,
     });
+  },
+  migrateModels: async (ctx) => {
+    await ctx.send({
+      message: 'on progress it can take a few minuets',
+    });
+
+    strapi.elastic.migrateModels();
+  },
+  migrateModel: async (ctx) => {
+    const { model } = ctx.request.body;
+
+    await strapi.elastic.migrateModel(model);
+    return ctx.send({ success: true });
   },
   generateIndexConfig: async (ctx) => {
     const data = ctx.request.body;

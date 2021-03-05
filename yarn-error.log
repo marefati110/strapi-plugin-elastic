@@ -2,24 +2,24 @@ Arguments:
   /usr/bin/node /usr/bin/yarn audit --json
 
 PATH: 
-  /home/ali/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/ali/google-cloud-sdk/bin:/home/ali/.cache/cloud-code/installer/google-cloud-sdk/bin
+  /home/ali/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/usr/local/go/bin:/home/ali/google-cloud-sdk/bin:/home/ali/.cache/cloud-code/installer/google-cloud-sdk/bin
 
 Yarn version: 
   1.22.10
 
 Node version: 
-  14.15.0
+  14.15.5
 
 Platform: 
   linux x64
 
 Trace: 
-  Error: connect ENETUNREACH 2606:4700::6810:1923:443 - Local (:::0)
+  Error: connect ENETUNREACH 104.16.22.35:443 - Local (0.0.0.0:0)
       at internalConnect (net.js:921:16)
-      at defaultTriggerAsyncIdScope (internal/async_hooks.js:429:12)
+      at defaultTriggerAsyncIdScope (internal/async_hooks.js:430:12)
       at emitLookup (net.js:1064:9)
-      at /usr/lib/node_modules/yarn/lib/cli.js:107150:29
-      at /usr/lib/node_modules/yarn/lib/cli.js:106996:25
+      at /usr/lib/node_modules/yarn/lib/cli.js:107131:28
+      at /usr/lib/node_modules/yarn/lib/cli.js:107040:13
       at RawTask.module.exports.RawTask.call (/usr/lib/node_modules/yarn/lib/cli.js:83614:19)
       at flush (/usr/lib/node_modules/yarn/lib/cli.js:83696:29)
       at processTicksAndRejections (internal/process/task_queues.js:75:11)
@@ -30,9 +30,9 @@ npm manifest:
     "version": "1.1.0",
     "description": "this package help you easily send your data to elasticsearch.",
     "strapi": {
-      "name": "elasticsearch",
+      "name": "Elasticsearch",
       "icon": "plug",
-      "description": "Description of elasticsearch plugin."
+      "description": "this package help you easily send your data to elasticsearch."
     },
     "dependencies": {
       "@elastic/elasticsearch": "^7.8.0",

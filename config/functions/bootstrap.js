@@ -1,12 +1,7 @@
 const { Client } = require('@elastic/elasticsearch');
 
 const {
-  helper: {
-    checkEnableModels,
-    checkNewVersion,
-    generateMainConfig,
-    initialStrapi,
-  },
+  helper: { generateMainConfig, initialStrapi },
 } = require('../../services');
 const {
   log,
@@ -20,17 +15,15 @@ module.exports = async () => {
 
   //
   if (strapi.config.elasticsearch) {
+    //
+
     const { connection } = strapi.config.elasticsearch;
 
-    // create elasticsearch instance
     const client = new Client(connection);
 
-    // combine elasticsearch package with strapi object
     strapi.elastic = client;
 
     initialStrapi();
-
-    // combine custom functions with strapi object
 
     strapi.elastic.findOne = findOne;
 
@@ -48,16 +41,6 @@ module.exports = async () => {
 
     strapi.elastic.log = log;
 
-    // create  `strapi_elasticsearch` index
-    // createOrUpdate('strapi_elastic_config', { id: 1, data: { value: 1 } });
-
-    // create index for enable models
-    // await checkEnableModels();
-
-    // check new release from github
-    // checkNewVersion();
-
-    // bootstrap message
     strapi.elastic.log.info('The elastic plugin is running ...', {
       setting: { saveToElastic: false },
     });

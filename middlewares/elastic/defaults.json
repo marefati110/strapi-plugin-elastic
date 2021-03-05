@@ -1,0 +1,5 @@
+{
+  "elastic": {
+    "enabled": true
+  }
+}
