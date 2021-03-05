@@ -67,20 +67,9 @@ Install plugin
 
   - `yarn install`
 
-## 🏁 Getting Started <a name = "getting_started"></a>
+# 🏁 Getting Started <a name = "getting_started"></a>
 
-- Go to `PROJECT/config/middleware.js` and add `"elastic"` to end of `load.before`
-- enabled `elastic` middleware in setting
-
-<p align="center">
-<img src="https://i.ibb.co/kS5Cb1t/code4.png" alt="code4" border="0">
-<br>
-final result should be like the image
-</p>
-
-<hr/>
-
-# How plugin works? <a name="how_work"></a>
+## How plugin works? <a name="how_work"></a>
 
 After the first run of the project, it creates a config file at `PROJECT/config/elasticsearch.js`
 
