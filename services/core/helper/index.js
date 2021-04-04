@@ -41,21 +41,21 @@ module.exports = {
 
     const existConfigFile = fs.existsSync(configPath);
 
-    if (!existConfigFile) {
-      const models = fs.readdirSync(rootPath + '/api');
+    if (existConfigFile) return;
 
-      const modelsConfig = [];
+    const models = fs.readdirSync(rootPath + '/api');
 
-      models.map((model) => {
-        const config = modelConfigTemplate(model);
-        modelsConfig.push(config);
-      });
+    const modelsConfig = [];
 
-      const elasticsearchConfig = elasticsearchConfigTemplate(modelsConfig);
-      fs.writeFile(configPath, elasticsearchConfig, (err) => {
-        if (err) throw err;
-      });
-    }
+    models.map((model) => {
+      const config = modelConfigTemplate(model);
+      modelsConfig.push(config);
+    });
+
+    const elasticsearchConfig = elasticsearchConfigTemplate(modelsConfig);
+    fs.writeFileSync(configPath, elasticsearchConfig, (err) => {
+      if (err) throw err;
+    });
   },
   compareDataWithMap: ({ properties, docs }) => {
     // initial variable;

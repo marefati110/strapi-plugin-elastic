@@ -4,9 +4,11 @@ import App from './containers/App';
 import Initializer from './containers/Initializer';
 import lifecycles from './lifecycles';
 import trads from './translations';
+import pluginLogo from './assets/images/logo.svg';
 
-export default strapi => {
-  const pluginDescription = pluginPkg.strapi.description || pluginPkg.description;
+export default (strapi) => {
+  const pluginDescription =
+    pluginPkg.strapi.description || pluginPkg.description;
   const icon = pluginPkg.strapi.icon;
   const name = pluginPkg.strapi.name;
 
@@ -26,6 +28,7 @@ export default strapi => {
     name,
     preventComponentRendering: false,
     trads,
+    pluginLogo,
     menu: {
       pluginsSectionLinks: [
         {

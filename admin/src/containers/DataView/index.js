@@ -20,7 +20,6 @@ const DataView = ({
   isMigrateActive,
   isDeleted,
   isCreated,
-  hasMapping,
   refreshData,
 }) => {
   const history = useHistory();
@@ -65,11 +64,11 @@ const DataView = ({
     })
       .then((res) => {
         if (res.success) {
-          alert('Migration was successful');
+          strapi.notification.success(`${model} model migrated successfully`);
           refreshData();
-        } else alert('Migration was unsuccessful');
+        } else strapi.notification.error(`migration failed`);
       })
-      .catch(() => alert('Migration was unsuccessful'))
+      .catch(() => strapi.notification.error(`migration failed`))
       .finally(() => setIsMigrating(false));
   };
 
@@ -81,11 +80,15 @@ const DataView = ({
     })
       .then((res) => {
         if (res.success) {
-          alert(`${model} deleted`);
           refreshData();
-        } else alert(`cannot deleted ${model}`);
+          strapi.notification.success(`${model} index deleted`);
+        } else {
+          strapi.notification.error(`cannot delete ${model} index`);
+        }
       })
-      .catch(() => alert(`cannot deleted ${model}`))
+      .catch(() => {
+        strapi.notification.error(`cannot delete ${model} index`);
+      })
       .finally(() => setIsDeleting(false));
   };
 
@@ -97,10 +100,13 @@ const DataView = ({
     })
       .then((res) => {
         refreshData();
-        if (res.success) alert(`${model} created`);
-        else alert(`cannot create ${model}`);
+        if (res.success) {
+          strapi.notification.success(`${model} index created`);
+        } else {
+          strapi.notification.error(`cannot create ${model} index`);
+        }
       })
-      .catch(() => alert(`cannot create ${model}`))
+      .catch(() => strapi.notification.error(`cannot create ${model} index`))
       .finally(() => setIsCreating(false));
   };
 
@@ -202,7 +208,6 @@ DataView.propTypes = {
   isMigrateActive: PropTypes.bool.isRequired,
   isDeleted: PropTypes.bool.isRequired,
   isCreated: PropTypes.bool.isRequired,
-  hasMapping: PropTypes.bool.isRequired,
 };
 
 export default memo(DataView);
