@@ -58,7 +58,7 @@ const DataView = ({
 
   const migrate = (model) => {
     setIsMigrating(true);
-    request(`/strapi-plugin-elastic/migrate-model`, {
+    request(`/elastic/migrate-model`, {
       method: 'POST',
       body: { model },
     })
@@ -74,7 +74,7 @@ const DataView = ({
 
   const deleteIndex = (model) => {
     setIsDeleting(true);
-    request(`/strapi-plugin-elastic/delete-index`, {
+    request(`/elastic/delete-index`, {
       method: 'POST',
       body: { model },
     })
@@ -94,7 +94,7 @@ const DataView = ({
 
   const createIndex = (model) => {
     setIsCreating(true);
-    request(`/strapi-plugin-elastic/create-index`, {
+    request(`/elastic/create-index`, {
       method: 'POST',
       body: { model },
     })

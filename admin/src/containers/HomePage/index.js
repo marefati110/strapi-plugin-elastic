@@ -48,7 +48,7 @@ const HomePage = () => {
       // fetch for the model data
       setLoading(true);
       request(
-        `/strapi-plugin-elastic/model?index=${activeModel.index}&_start=${page}&_limit=${limit}`,
+        `/elastic/model?index=${activeModel.index}&_start=${page}&_limit=${limit}`,
         {
           method: 'GET',
         }
@@ -66,7 +66,7 @@ const HomePage = () => {
 
   useEffect(() => {
     // fetch all models
-    request(`/strapi-plugin-elastic/models`, {
+    request(`/elastic/models`, {
       method: 'GET',
     }).then((res) => {
       if (res && res.length && res.length > 0) {
