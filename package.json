@@ -1,6 +1,6 @@
 {
   "name": "strapi-plugin-elastic",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "this package help you easily send your data to elasticsearch.",
   "strapi": {
     "name": "Elasticsearch",
@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.8.0",
-    "moment": "^2.27.0",
     "axios": "^0.20.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "moment": "^2.27.0"
   },
   "author": {
     "name": "Ali Marefati",
