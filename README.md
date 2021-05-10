@@ -61,7 +61,7 @@ Install plugin
 
 - Clone the project
 
-  - `git clone https://github.com/marefati110/strapi-plugin-elasticsearch.git`
+  - `git submodule add https://github.com/marefati110/strapi-plugin-elasticsearch.git ./elastic`
 
 - Install dependencies
 
