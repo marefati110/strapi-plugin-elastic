@@ -19,6 +19,10 @@ const modelConfigTemplate = (model) => ({
   urls: [],
 });
 
+const isModel = (config) => { 
+  return config.model !== '.gitkeep'
+};
+
 const elasticsearchConfigTemplate = (modelsConfig) => `
 module.exports = ({ env }) => ({
   connection: {
@@ -49,7 +53,7 @@ module.exports = {
 
     models.map((model) => {
       const config = modelConfigTemplate(model);
-      modelsConfig.push(config);
+      if(isModel(config)) modelsConfig.push(config);
     });
 
     const elasticsearchConfig = elasticsearchConfigTemplate(modelsConfig);
@@ -57,6 +61,7 @@ module.exports = {
       if (err) throw err;
     });
   },
+  
   compareDataWithMap: ({ properties, docs }) => {
     // initial variable;
     const elasticSearchNumericTypes = [
