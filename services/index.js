@@ -3,7 +3,7 @@ const {
   migration,
   helper,
   functions,
-} = require('./core');
+} = require('./core/middleware/middleware');
 
 const {
   createOrUpdate,
@@ -13,7 +13,7 @@ const {
   migrateById,
 } = require('./functions');
 
-const log = require('./log');
+const log = require('./logger');
 
 module.exports = {
   createOrUpdate,
