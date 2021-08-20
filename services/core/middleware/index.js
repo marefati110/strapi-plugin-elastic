@@ -92,6 +92,8 @@ module.exports = {
         //
       }
 
+      console.log(data, 'data');
+
       await strapi.elastic.createOrUpdate(targetModel.model, { id, data });
 
       //

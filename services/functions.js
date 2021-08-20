@@ -1,39 +1,98 @@
 const _ = require('lodash');
-const { compareDataWithMap } = require('../helper');
-/* eslint-disable no-empty */
+const { compareDataWithMap } = require('./core/helper');
 module.exports = {
-  // need refactor
-  find: async (index, query) => {
+  /**
+   *
+   * @param {string} model
+   * @param {Object} query
+   */
+  find: async (model, query) => {
+    const { models } = strapi.config.elasticsearch;
+    const targetModel = models.find((item) => item.model === model);
+
+    if (!targetModel) {
+      strapi.log.error('model notfound');
+      return;
+    }
+
     try {
       const res = await strapi.elastic.search({
-        index,
+        index: targetModel.index,
         ...query,
       });
       return res;
     } catch (e) {
-      return null;
+      strapi.log.error(e.message);
     }
   },
-  findOne: async (model, { id }) => {
+
+  /**
+   *
+   * @param {string} model
+   * @param {Object|number|string} param1
+   */
+  findOne: async (model, pk) => {
     const { models } = strapi.config.elasticsearch;
     const targetModel = models.find((item) => item.model === model);
 
-    if (!targetModel || !id) return null;
+    let id;
+    if (_.isObject(pk)) {
+      id = pk.id;
+    } else {
+      id = pk;
+    }
 
-    return strapi.elastic.get({
+    if (!id) {
+      strapi.log.error('id parameter is not valid');
+      return;
+    }
+
+    if (!targetModel) {
+      strapi.log.error('model notfound');
+      return;
+    }
+
+    const result = await strapi.elastic.get({
       index: targetModel.index,
       id,
     });
+
+    return result;
   },
-  destroy: async (model, { id, id_in }) => {
-    id_in = id_in || [id];
+  /**
+   *
+   * @param {string} model
+   * @param {Object|string|number} pk
+   */
+  destroy: async (model, pk) => {
+    let id_in;
+
+    if (pk.id_in && !_.isArray(pk.id_in)) {
+      strapi.log.error('id_in must be array');
+      return;
+    }
+
+    if (!_.isObject(pk)) {
+      id_in = [pk];
+    } else {
+      id_in = pk.id_in || [pk.id];
+    }
 
     const { models } = strapi.config.elasticsearch;
     const targetModel = models.find((item) => item.model === model);
 
-    if (!targetModel || !id_in) return null;
+    if (!id_in) {
+      strapi.log.error('pk parameter is not valid');
+    }
 
-    const body = await id_in.map((id) => {
+    if (!targetModel) {
+      strapi.log.error('model notfound');
+      return;
+    }
+
+    const a = [];
+
+    const body = id_in.map((id) => {
       return {
         delete: {
           _index: targetModel.index,
@@ -46,14 +105,27 @@ module.exports = {
     try {
       return strapi.elastic.bulk({ body });
     } catch (e) {
-      return null;
+      strapi.log.error(e.message);
     }
   },
+  /**
+   *
+   * @param {string} model
+   * @param {Object} param1
+   */
   createOrUpdate: async (model, { id, data }) => {
     const { models } = strapi.config.elasticsearch;
     const targetModel = await models.find((item) => item.model === model);
 
-    if (!targetModel || !data) return null;
+    if (!data) {
+      strapi.log.error('data property is not valid');
+      return;
+    }
+
+    if (!targetModel) {
+      strapi.log.error('model notfound');
+      return;
+    }
 
     const indexConfig = strapi.elastic.indicesMapping[targetModel.model];
 
@@ -69,16 +141,14 @@ module.exports = {
       data = res.result || data;
     }
 
+    let result;
     if (!id && data) {
-      //
-      return strapi.elastic.index({
+      result = await strapi.elastic.index({
         index: targetModel.index,
         body: data,
       });
-      //
     } else if (id && data) {
-      //
-      const elastic = await strapi.elastic.update({
+      result = await strapi.elastic.update({
         index: targetModel.index,
         id: data[targetModel.pk || 'id'],
         body: {
@@ -87,9 +157,14 @@ module.exports = {
         },
       });
 
-      return elastic;
+      return result;
     }
   },
+  /**
+   *
+   * @param {string} model
+   * @param {Object} param1
+   */
   migrateById: async (model, { id, id_in, relations, conditions }) => {
     const { models } = strapi.config.elasticsearch;
 
@@ -119,6 +194,8 @@ module.exports = {
       doc,
     ]);
 
-    return strapi.elastic.bulk({ refresh: true, body });
+    const result = await strapi.elastic.bulk({ refresh: true, body });
+
+    return result;
   },
 };

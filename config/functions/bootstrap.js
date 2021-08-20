@@ -6,17 +6,23 @@ const {
 const {
   log,
   migration: { migrateModel, migrateModels },
-  functions: { find, findOne, createOrUpdate, destroy, migrateById },
+  find,
+  findOne,
+  createOrUpdate,
+  destroy,
+  migrateById,
 } = require('../../services');
 
 module.exports = async () => {
-  //
+  /**
+   * generate elasticsearch config file
+   */
   generateMainConfig();
 
-  //
+  /**
+   * initialize strapi.elastic object
+   */
   if (strapi.config.elasticsearch) {
-    //
-
     const { connection } = strapi.config.elasticsearch;
 
     const client = new Client(connection);
@@ -25,24 +31,22 @@ module.exports = async () => {
 
     initialStrapi();
 
-    strapi.elastic.findOne = findOne;
+    const functions = {
+      findOne,
+      find,
+      destroy,
+      createOrUpdate,
+      migrateModel,
+      transferModelData: migrateModel,
+      migrateModels,
+      transferModelsData: migrateModels,
+      migrateById,
+      transferModelDataById: migrateById,
+      log,
+    };
 
-    strapi.elastic.find = find;
+    Object.assign(strapi.elastic, functions);
 
-    strapi.elastic.destroy = destroy;
-
-    strapi.elastic.createOrUpdate = createOrUpdate;
-
-    strapi.elastic.migrateModel = migrateModel;
-
-    strapi.elastic.migrateModels = migrateModels;
-
-    strapi.elastic.migrateById = migrateById;
-
-    strapi.elastic.log = log;
-
-    strapi.elastic.log.info('The elastic plugin is running ...', {
-      setting: { saveToElastic: false },
-    });
+    strapi.log.info('The elastic plugin is running');
   }
 };
