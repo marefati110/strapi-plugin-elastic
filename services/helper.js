@@ -71,7 +71,11 @@ module.exports = {
               targetModel.pk = items[url].pk;
               targetModel.relations = items[url].relations || [];
               targetModel.conditions = items[url].conditions || {};
-              targetModel.fillByResponse = items[url].fillByResponse || true;
+              targetModel.fillByResponse = _.isBoolean(
+                items[url].fillByResponse
+              )
+                ? items[url].fillByResponse
+                : true;
               res = targetModel;
             }
           }
