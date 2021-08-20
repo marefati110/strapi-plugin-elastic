@@ -46,7 +46,7 @@ module.exports = {
   },
   isContentManagerUrl: async ({ models, reqUrl }) => {
     //
-    const contentManagerUrlPattern = /\/content-manager\/collection-types\/([a-zA-Z-_]+)::([a-zA-Z-_]+).(\w+)\/(\d+)/;
+    const contentManagerUrlPattern = /\/content-manager\/(?:collection-types|single-types)\/([a-zA-Z-_]+)::([a-zA-Z-_]+).([a-zA-Z0-9_-]+)(?:\/(\d+))?/;
 
     const result = reqUrl.match(contentManagerUrlPattern);
 
@@ -66,7 +66,7 @@ module.exports = {
     return targetModel;
   },
   isDeleteAllUrl: async ({ models, reqUrl }) => {
-    const contentManagerUrlPattern = /^\/content-manager\/collection-types\/(\w+)\/\w*::([a-zA-Z-]+).(\w+)|\/(\d*)/;
+    const contentManagerUrlPattern = /^\/content-manager\/(?:collection-types|single-types)\/(\w+)\/\w*::([a-zA-Z-]+).([a-zA-Z0-9_-]+)|\/(\d*)/;
 
     const result = reqUrl.match(contentManagerUrlPattern);
 
@@ -88,7 +88,7 @@ module.exports = {
     return targetModel;
   },
   getDeleteIds: async ({ body, reqUrl }) => {
-    const contentManagerUrlPattern = /\/content-manager\/collection-types\/(\w+)::([a-zA-Z-_]+).([a-zA-Z-_]+)\/actions\/bulkDelete/;
+    const contentManagerUrlPattern = /\/content-manager\/(?:collection-types|single-types)\/(\w+)::([a-zA-Z-_]+).([a-zA-Z0-9_-]+)\/actions\/bulkDelete/;
 
     const result = contentManagerUrlPattern.test(reqUrl);
 
