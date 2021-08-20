@@ -31,8 +31,6 @@ module.exports = ({ env }) => ({
   },
   setting: {
     importLimit: 3000,
-    index_postfix: '',
-    index_postfix: '',
     removeExistIndexForMigration: false,
   },
   models: ${JSON.stringify(modelsConfig, null, 2)}
@@ -89,8 +87,6 @@ module.exports = {
 
     const result = reqUrl.match(contentManagerUrlPattern);
 
-    console.log(contentManagerUrlPattern);
-
     if (!result) return;
 
     const [, , , model] = result;
@@ -146,7 +142,7 @@ module.exports = {
     return ids;
   },
   generateMainConfig: () => {
-    const rootPath = path.resolve(__dirname, '../../../../../');
+    const rootPath = path.resolve(__dirname, '../../../');
     const configPath = rootPath + '/config/elasticsearch.js';
 
     const existConfigFile = fs.existsSync(configPath);
@@ -325,7 +321,7 @@ module.exports = {
     //
     if (!_.isArray(targetModels)) targetModels = [targetModels];
 
-    const rootPath = path.resolve(__dirname, '../../../../../');
+    const rootPath = path.resolve(__dirname, '../../../');
     const exportPath = `${rootPath}/exports/elasticsearch`;
 
     for (const targetModel of targetModels) {
@@ -393,7 +389,7 @@ module.exports = {
   },
   findMappingConfig: async ({ targetModel }) => {
     //
-    const rootPath = path.resolve(__dirname, '../../../../../');
+    const rootPath = path.resolve(__dirname, '../../../');
 
     const mappingConfigFilePath = `${rootPath}/exports/elasticsearch/${targetModel.model}.index.json`;
 
@@ -412,7 +408,7 @@ module.exports = {
 
     const { models } = strapi.config.elasticsearch;
 
-    const rootPath = path.resolve(__dirname, '../../../../../');
+    const rootPath = path.resolve(__dirname, '../../../');
 
     const exportPath = `${rootPath}/exports/elasticsearch`;
 

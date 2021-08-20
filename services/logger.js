@@ -2,8 +2,6 @@ const os = require('os');
 const moment = require('moment');
 
 const sendToElasticsearch = (data) => {
-  //
-
   if (data && data.setting && data.setting.saveToElastic === false) return;
 
   const index =
@@ -38,13 +36,8 @@ const displayLog = (data) => {
 };
 
 const log = ({ level, msg, data }) => {
-  //
-
   if (displayLog(data)) {
-    //
     strapi.log[level](msg);
-
-    //
   }
 };
 

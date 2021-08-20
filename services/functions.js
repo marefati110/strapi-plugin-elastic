@@ -197,6 +197,12 @@ module.exports = {
 
     return result;
   },
+  /**
+   *
+   * @param {string} model
+   * @param {Object} params
+   * @returns
+   */
   migrateModel: async (model, params = {}) => {
     // specific condition
     params.conditions = params.conditions || {};
@@ -305,6 +311,10 @@ module.exports = {
       //
     }
   },
+  /**
+   *
+   * @param {Object} params
+   */
   migrateModels: async (params = {}) => {
     const { setting, models } = strapi.config.elasticsearch;
 

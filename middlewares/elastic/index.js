@@ -1,4 +1,4 @@
-const { elasticsearchManager } = require('../../services/core/middleware');
+const { elasticsearchManager } = require('../../services');
 
 module.exports = (strapi) => ({
   initialize() {

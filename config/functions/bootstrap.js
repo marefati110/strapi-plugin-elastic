@@ -4,8 +4,9 @@ const {
   helper: { generateMainConfig, initialStrapi },
 } = require('../../services');
 const {
-  log,
-  migration: { migrateModel, migrateModels },
+  logger,
+  migrateModel,
+  migrateModels,
   find,
   findOne,
   createOrUpdate,
@@ -42,7 +43,7 @@ module.exports = async () => {
       transferModelsData: migrateModels,
       migrateById,
       transferModelDataById: migrateById,
-      log,
+      log: logger,
     };
 
     Object.assign(strapi.elastic, functions);

@@ -1,19 +1,18 @@
 const {
-  elasticsearchManager,
-  migration,
-  helper,
-  functions,
-} = require('./core/middleware/middleware');
-
-const {
   createOrUpdate,
   destroy,
   find,
   findOne,
   migrateById,
+  migrateModel,
+  migrateModels,
 } = require('./functions');
 
-const log = require('./logger');
+const { elasticsearchManager } = require('./middleware');
+
+const logger = require('./logger');
+
+const helper = require('./helper');
 
 module.exports = {
   createOrUpdate,
@@ -22,8 +21,8 @@ module.exports = {
   elasticsearchManager,
   findOne,
   migrateById,
-  migration,
-  log,
+  migrateModel,
+  migrateModels,
+  logger,
   helper,
-  functions,
 };
